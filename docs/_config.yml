@@ -1,3 +1,6 @@
 title: Meditor
 description: A focused, native Mermaid editor for macOS.
-theme: minima
+url: https://addodelgrossi.github.io
+baseurl: /meditor
+exclude:
+  - README.md
