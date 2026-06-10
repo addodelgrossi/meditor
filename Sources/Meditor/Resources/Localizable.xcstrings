@@ -11,6 +11,16 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arquitetura" } }
       }
     },
+    "Appearance" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aparência" } }
+      }
+    },
+    "App appearance" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aparência do app" } }
+      }
+    },
     "Author" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Autor" } }
@@ -156,6 +166,11 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Layout" } }
       }
     },
+    "Light" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Claro" } }
+      }
+    },
     "Map a clear process" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mapeie um processo com clareza" } }
@@ -259,6 +274,11 @@
     "Support" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Suporte" } }
+      }
+    },
+    "System" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sistema" } }
       }
     },
     "Templates" : {

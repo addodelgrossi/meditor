@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
     @AppStorage("defaultTheme") private var defaultThemeRaw = MermaidTheme.default.rawValue
     @AppStorage("editorFontName") private var editorFontName = "SF Mono"
     @AppStorage("editorFontSize") private var editorFontSize = 14.0
@@ -11,6 +12,14 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            Section("Appearance") {
+                Picker("App appearance", selection: appAppearance) {
+                    ForEach(AppAppearance.allCases) { appearance in
+                        Text(appearance.label).tag(appearance)
+                    }
+                }
+            }
+
             Section("Editor") {
                 Picker("Font", selection: $editorFontName) {
                     Text("SF Mono").tag("SF Mono")
@@ -63,5 +72,12 @@ struct SettingsView: View {
         .sheet(isPresented: $showsLicenses) {
             LicensesView()
         }
+    }
+
+    private var appAppearance: Binding<AppAppearance> {
+        Binding(
+            get: { AppAppearance.resolved(appAppearanceRaw) },
+            set: { appAppearanceRaw = $0.rawValue }
+        )
     }
 }

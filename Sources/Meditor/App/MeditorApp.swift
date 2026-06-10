@@ -3,10 +3,13 @@ import SwiftUI
 
 @main
 struct MeditorApp: App {
+    @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
+
     var body: some Scene {
         DocumentGroup(newDocument: MermaidDocument()) { configuration in
             DocumentWorkspace(document: configuration.$document)
                 .frame(minWidth: 900, minHeight: 600)
+                .preferredColorScheme(appAppearance.colorScheme)
         }
         .defaultSize(width: 1_280, height: 800)
         .commands {
@@ -15,6 +18,11 @@ struct MeditorApp: App {
 
         Settings {
             SettingsView()
+                .preferredColorScheme(appAppearance.colorScheme)
         }
+    }
+
+    private var appAppearance: AppAppearance {
+        AppAppearance.resolved(appAppearanceRaw)
     }
 }

@@ -25,6 +25,34 @@ enum WorkspaceMode: String, CaseIterable, Identifiable {
     }
 }
 
+enum AppAppearance: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
+
+    var id: Self { self }
+
+    var label: LocalizedStringKey {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+
+    static func resolved(_ rawValue: String) -> Self {
+        Self(rawValue: rawValue) ?? .system
+    }
+}
+
 enum MermaidTheme: String, CaseIterable, Identifiable {
     case `default`
     case neutral

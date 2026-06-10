@@ -3,6 +3,16 @@ import XCTest
 @testable import Meditor
 
 final class MeditorCoreTests: XCTestCase {
+    func testAppAppearanceColorSchemes() {
+        XCTAssertNil(AppAppearance.system.colorScheme)
+        XCTAssertEqual(AppAppearance.light.colorScheme, .light)
+        XCTAssertEqual(AppAppearance.dark.colorScheme, .dark)
+    }
+
+    func testInvalidAppAppearanceFallsBackToSystem() {
+        XCTAssertEqual(AppAppearance.resolved("invalid"), .system)
+    }
+
     func testDocumentUTF8RoundTrip() throws {
         let source = "flowchart LR\n    A[Olá] --> B[世界]\n"
         let encoded = try MermaidDocument(text: source).encodedData()
