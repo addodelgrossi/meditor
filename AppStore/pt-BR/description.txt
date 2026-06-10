@@ -5,6 +5,7 @@ Escreva o código do diagrama em um editor preciso e veja uma prévia nítida ao
 DESTAQUES
 
 • Documentos .mmd e .mermaid nativos com salvamento automático, desfazer e múltiplas janelas
+• Prévia pelo Quick Look do Finder: selecione um arquivo Mermaid e pressione espaço
 • Prévia offline ao vivo com movimento, zoom, temas e recuperação da última prévia válida
 • Destaque de sintaxe, números de linha, sugestões e navegação para erros
 • Modelos para fluxogramas, sequências, classes, estados, entidade-relacionamento, Gantt, mapas mentais e arquitetura

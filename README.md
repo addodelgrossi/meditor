@@ -15,6 +15,10 @@
   <img alt="Offline" src="https://img.shields.io/badge/works-offline-34D399">
 </p>
 
+<p align="center">
+  <img src="docs/assets/quick-look-preview.svg" width="900" alt="Animated illustration of selecting a Mermaid file in Finder and pressing Space to preview the rendered diagram with Quick Look">
+</p>
+
 ## Why Meditor?
 
 Meditor keeps Mermaid editing simple: native documents on the left, a sharp live
@@ -29,10 +33,14 @@ flowchart LR
 ## Highlights
 
 - Native `.mmd` and `.mermaid` documents with autosave, undo, and multiple windows
+- Finder Quick Look previews: select a Mermaid file and press Space
 - TextKit editor with syntax highlighting, line numbers, completion, and inline errors
 - Crisp offline preview with pan, zoom, themes, and last-valid-preview recovery
 - Templates for flowcharts, sequences, classes, states, ER, Gantt, mindmaps, and architecture
 - SVG, PNG, and PDF export, plus clipboard support
+- Publish a view-only link with auto-expiry and a social preview (powered by
+  [meditor-cloud](https://github.com/addodelgrossi/meditor-cloud)); manage or
+  unpublish your links from the Diagram menu
 - English and Brazilian Portuguese interface
 
 ## Getting Started
@@ -65,6 +73,7 @@ swift build
 swift test
 ./script/generate_project.sh
 ./script/build_and_run.sh --verify
+./script/verify_quicklook.sh
 ```
 
 Mermaid 11.15.0 is vendored for private, offline rendering. Update it with:
@@ -100,6 +109,12 @@ App Store metadata and screenshot guidance live in `AppStore/`. Screenshot
 automation requires Screen & System Audio Recording permission for Codex or
 Terminal. The remaining account and submission steps are tracked in
 `AppStore/RELEASE_CHECKLIST.md`.
+
+Regenerate the Finder Quick Look demo and its MP4, GIF, and poster assets with:
+
+```bash
+./script/capture_quicklook_demo.sh
+```
 
 ## License
 

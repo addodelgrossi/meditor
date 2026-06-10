@@ -1,0 +1,13 @@
+"Empty Mermaid document" = "Empty Mermaid document";
+"Line %d: %@ Showing source instead." = "Line %d: %@ Showing source instead.";
+"Mermaid source" = "Mermaid source";
+"Rendering Mermaid preview" = "Rendering Mermaid preview";
+"Rendering timed out. Showing source instead." = "Rendering timed out. Showing source instead.";
+"Showing source instead." = "Showing source instead.";
+"The diagram contains invalid Mermaid syntax." = "The diagram contains invalid Mermaid syntax.";
+"The file is not valid UTF-8 text." = "The file is not valid UTF-8 text.";
+"The offline renderer is unavailable. Showing source instead." = "The offline renderer is unavailable. Showing source instead.";
+"The preview request could not be prepared. Showing source instead." = "The preview request could not be prepared. Showing source instead.";
+"This document does not contain a diagram yet." = "This document does not contain a diagram yet.";
+"Unable to read Mermaid document" = "Unable to read Mermaid document";
+"Unable to render Mermaid preview" = "Unable to render Mermaid preview";

@@ -10,6 +10,7 @@
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }
     body { user-select: none; cursor: grab; }
     body.dragging { cursor: grabbing; }
+    body.static { cursor: default; }
     #viewport { position: absolute; inset: 0; overflow: hidden; }
     #diagram {
       position: absolute;
@@ -45,6 +46,7 @@
       let naturalWidth = 0;
       let naturalHeight = 0;
       let hasRendered = false;
+      let interactive = true;
 
       const post = payload => window.webkit.messageHandlers.meditor.postMessage(payload);
       const transform = () => {
@@ -70,7 +72,7 @@
             (window.innerHeight - padding) / naturalHeight,
             maxScale
           ),
-          0.08
+          interactive ? 0.08 : 0.001
         );
       };
       const fit = maxScale => {
@@ -94,6 +96,8 @@
       window.Meditor = {
         async render(request) {
           try {
+            interactive = request.interactive !== false;
+            document.body.classList.toggle("static", !interactive);
             mermaid.initialize({
               startOnLoad: false,
               securityLevel: "strict",
@@ -168,12 +172,14 @@
             displayedWidth: rect ? rect.width : 0,
             displayedHeight: rect ? rect.height : 0,
             viewportWidth: window.innerWidth,
-            viewportHeight: window.innerHeight
+            viewportHeight: window.innerHeight,
+            interactive
           };
         }
       };
 
       window.addEventListener("wheel", event => {
+        if (!interactive) return;
         event.preventDefault();
         if (event.metaKey || event.ctrlKey) {
           const factor = event.deltaY < 0 ? 1.08 : 0.92;
@@ -186,13 +192,14 @@
       }, { passive: false });
 
       window.addEventListener("pointerdown", event => {
+        if (!interactive) return;
         dragging = true;
         pointerX = event.clientX;
         pointerY = event.clientY;
         document.body.classList.add("dragging");
       });
       window.addEventListener("pointermove", event => {
-        if (!dragging) return;
+        if (!interactive || !dragging) return;
         offsetX += event.clientX - pointerX;
         offsetY += event.clientY - pointerY;
         pointerX = event.clientX;
@@ -200,10 +207,13 @@
         transform();
       });
       window.addEventListener("pointerup", () => {
+        if (!interactive) return;
         dragging = false;
         document.body.classList.remove("dragging");
       });
-      window.addEventListener("dblclick", () => window.Meditor.fit());
+      window.addEventListener("dblclick", () => {
+        if (interactive) window.Meditor.fit();
+      });
       window.addEventListener("resize", () => {
         if (hasRendered) window.Meditor.fit();
       });

@@ -1,1 +1,1 @@
-mermaid,diagrama,fluxograma,sequência,arquitetura,desenvolvedor,editor,svg
+mermaid,diagrama,fluxograma,sequência,arquitetura,desenvolvedor,editor,svg,quicklook,finder

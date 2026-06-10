@@ -4,6 +4,7 @@
 
 - [x] Xcode app and test targets with automatic signing for team `QHURUB34Z9`
 - [x] Bundle ID `com.addodelgrossi.meditor`, version `1.0.0`, build `1`
+- [x] Quick Look extension bundle ID `com.addodelgrossi.meditor.quicklook`
 - [x] App Sandbox, user-selected file access, privacy manifest, and export compliance
 - [x] Complete app icon, English and Brazilian Portuguese localizations
 - [x] About & Legal UI, MIT license, and Mermaid dependency notice
@@ -14,6 +15,7 @@
 ## Apple account and App Store Connect
 
 - [ ] Confirm the explicit Bundle ID exists in Certificates, Identifiers & Profiles
+- [ ] Confirm the explicit Quick Look extension Bundle ID exists in Certificates, Identifiers & Profiles
 - [ ] Accept pending agreements and complete the applicable trader declaration
 - [ ] Create a new macOS app:
   - Name: `Meditor: Mermaid Editor`
@@ -46,6 +48,7 @@ record for `com.addodelgrossi.meditor` does not exist yet. Once created, run:
 ```bash
 ./script/capture_screenshots.sh en-US
 ./script/capture_screenshots.sh pt-BR
+./script/capture_quicklook_demo.sh
 ```
 
 ## TestFlight and review

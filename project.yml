@@ -39,10 +39,38 @@ targets:
         INFOPLIST_FILE: Configuration/Info.plist
         PRODUCT_MODULE_NAME: Meditor
         PRODUCT_NAME: Meditor
+    dependencies:
+      - target: MeditorQuickLook
     scheme:
       gatherCoverageData: true
       testTargets:
         - MeditorTests
+        - MeditorQuickLookTests
+
+  MeditorQuickLook:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources/MeditorQuickLook
+      - path: Sources/Meditor/Resources/renderer.html
+        buildPhase: resources
+      - path: Sources/Meditor/Resources/Mermaid/mermaid.min.js
+        buildPhase: resources
+    configFiles:
+      Debug: Configuration/Meditor.xcconfig
+      Release: Configuration/Meditor.xcconfig
+    settings:
+      base:
+        APPLICATION_EXTENSION_API_ONLY: YES
+        CODE_SIGN_ENTITLEMENTS: Configuration/MeditorQuickLook.entitlements
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_USER_SELECTED_FILES: readonly
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Configuration/MeditorQuickLook-Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.quicklook
+        PRODUCT_MODULE_NAME: MeditorQuickLook
+        PRODUCT_NAME: MeditorQuickLook
+        SKIP_INSTALL: YES
 
   MeditorTests:
     type: bundle.unit-test
@@ -59,3 +87,20 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.tests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Meditor.app/Contents/MacOS/Meditor"
+
+  MeditorQuickLookTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/MeditorQuickLookTests
+      - path: Sources/MeditorQuickLook/PreviewViewController.swift
+      - path: Sources/Meditor/Resources/renderer.html
+        buildPhase: resources
+      - path: Sources/Meditor/Resources/Mermaid/mermaid.min.js
+        buildPhase: resources
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: QHURUB34Z9
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.quicklook.tests

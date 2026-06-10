@@ -51,6 +51,17 @@
                ReferencedContainer = "container:Meditor.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "79111B547F25C8F92259B8F9"
+               BuildableName = "MeditorQuickLookTests.xctest"
+               BlueprintName = "MeditorQuickLookTests"
+               ReferencedContainer = "container:Meditor.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

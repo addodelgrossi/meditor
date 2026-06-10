@@ -2,6 +2,7 @@ app:
   name: "Meditor: Mermaid Editor"
   fallback_name: "Meditor for Mermaid"
   bundle_id: com.addodelgrossi.meditor
+  quick_look_bundle_id: com.addodelgrossi.meditor.quicklook
   sku: meditor-macos-001
   platform: macOS
   version: 1.0.0

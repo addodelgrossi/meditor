@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Animated illustration of Mermaid Quick Look in Finder</title>
+  <desc id="desc">A Finder window selects architecture.mmd, then a Quick Look window appears with a rendered Mermaid flowchart.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#111426"/>
+      <stop offset="1" stop-color="#080a12"/>
+    </linearGradient>
+    <linearGradient id="selection" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#7869d8"/>
+      <stop offset="1" stop-color="#5748ad"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .muted { fill: #a6a9bb; }
+      .line { stroke: #aaa0ed; stroke-width: 4; fill: none; stroke-linecap: round; }
+      .node { fill: #24283c; stroke: #8e80e8; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="900" fill="url(#background)"/>
+  <circle cx="1180" cy="135" r="300" fill="#6f5bd3" opacity=".1"/>
+  <circle cx="160" cy="810" r="330" fill="#376f91" opacity=".08"/>
+
+  <g filter="url(#shadow)">
+    <rect x="88" y="82" width="1264" height="736" rx="24" fill="#181b26" stroke="#373a49"/>
+    <rect x="88" y="82" width="1264" height="58" rx="24" fill="#222532"/>
+    <rect x="88" y="116" width="1264" height="24" fill="#222532"/>
+    <circle cx="126" cy="111" r="8" fill="#ff5f57"/>
+    <circle cx="152" cy="111" r="8" fill="#febc2e"/>
+    <circle cx="178" cy="111" r="8" fill="#28c840"/>
+    <text x="720" y="119" text-anchor="middle" fill="#e9eaf2" font-size="17" font-weight="600">Diagrams</text>
+
+    <rect x="88" y="140" width="260" height="678" fill="#20232e"/>
+    <text x="126" y="195" class="muted" font-size="14" font-weight="700" letter-spacing="1.5">FAVORITES</text>
+    <text x="126" y="242" fill="#e6e7ee" font-size="17">Recents</text>
+    <text x="126" y="286" fill="#e6e7ee" font-size="17">Desktop</text>
+    <rect x="108" y="310" width="220" height="42" rx="8" fill="#3a3d49"/>
+    <text x="126" y="337" fill="#fff" font-size="17">Diagrams</text>
+
+    <text x="386" y="184" class="muted" font-size="14" font-weight="700">NAME</text>
+    <text x="1100" y="184" class="muted" font-size="14" font-weight="700">KIND</text>
+    <line x1="368" y1="202" x2="1328" y2="202" stroke="#353846"/>
+
+    <rect x="368" y="218" width="960" height="58" rx="8" fill="url(#selection)">
+      <rect x="394" y="231" width="32" height="32" rx="7" fill="#f4f0ff"/>
+      <path d="M403 251l7-8 7 8" fill="none" stroke="#6656ba" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="444" y="253" fill="#fff" font-size="18" font-weight="600">architecture.mmd</text>
+      <text x="1100" y="253" fill="#f0edff" font-size="16">Mermaid document</text>
+    </rect>
+    <text x="444" y="318" fill="#d5d7e1" font-size="18">onboarding.mermaid</text>
+    <text x="1100" y="318" class="muted" font-size="16">Mermaid document</text>
+  </g>
+
+  <g>
+    <rect x="616" y="754" width="208" height="78" rx="18" fill="#292d3a" stroke="#626779" stroke-width="2">
+      <animate attributeName="fill" values="#292d3a;#292d3a;#6254b5;#6254b5;#292d3a" keyTimes="0;.08;.13;.21;.3" dur="8s" repeatCount="indefinite"/>
+    </rect>
+    <text x="720" y="803" text-anchor="middle" fill="#fff" font-size="22" font-weight="600">space</text>
+  </g>
+
+  <g opacity="0" filter="url(#shadow)">
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.16;.24;.9;1" dur="8s" repeatCount="indefinite"/>
+    <rect x="350" y="175" width="740" height="540" rx="28" fill="#141722" stroke="#5b6072" stroke-width="2"/>
+    <rect x="350" y="175" width="740" height="58" rx="28" fill="#252936"/>
+    <rect x="350" y="205" width="740" height="28" fill="#252936"/>
+    <circle cx="389" cy="204" r="8" fill="#ff5f57"/>
+    <circle cx="415" cy="204" r="8" fill="#febc2e"/>
+    <circle cx="441" cy="204" r="8" fill="#28c840"/>
+    <text x="720" y="211" text-anchor="middle" fill="#f4f4f8" font-size="17" font-weight="600">architecture.mmd</text>
+
+    <rect x="390" y="270" width="660" height="390" rx="18" fill="#0d1019"/>
+    <rect class="node" x="450" y="410" width="130" height="68" rx="12"/>
+    <rect class="node" x="655" y="410" width="130" height="68" rx="12"/>
+    <rect class="node" x="860" y="410" width="130" height="68" rx="12"/>
+    <path class="line" d="M580 444h75"/>
+    <path class="line" d="M785 444h75"/>
+    <path d="M646 435l13 9-13 9M851 435l13 9-13 9" fill="none" stroke="#aaa0ed" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="515" y="451" text-anchor="middle" fill="#f2f1fa" font-size="17" font-weight="600">Finder</text>
+    <text x="720" y="451" text-anchor="middle" fill="#f2f1fa" font-size="17" font-weight="600">Quick Look</text>
+    <text x="925" y="451" text-anchor="middle" fill="#f2f1fa" font-size="17" font-weight="600">Diagram</text>
+    <text x="720" y="325" text-anchor="middle" fill="#e5e2fa" font-size="22" font-weight="700">Rendered locally with Mermaid</text>
+    <text x="720" y="355" text-anchor="middle" class="muted" font-size="16">No app launch. No network request.</text>
+  </g>
+
+  <text x="122" y="866" fill="#9da1b5" font-size="14">Animated illustration. Run script/capture_quicklook_demo.sh to generate the real Finder recording.</text>
+</svg>

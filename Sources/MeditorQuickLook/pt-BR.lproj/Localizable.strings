@@ -1,0 +1,13 @@
+"Empty Mermaid document" = "Documento Mermaid vazio";
+"Line %d: %@ Showing source instead." = "Linha %d: %@ Exibindo o código-fonte.";
+"Mermaid source" = "Código-fonte Mermaid";
+"Rendering Mermaid preview" = "Renderizando prévia Mermaid";
+"Rendering timed out. Showing source instead." = "A renderização excedeu o tempo limite. Exibindo o código-fonte.";
+"Showing source instead." = "Exibindo o código-fonte.";
+"The diagram contains invalid Mermaid syntax." = "O diagrama contém sintaxe Mermaid inválida.";
+"The file is not valid UTF-8 text." = "O arquivo não é um texto UTF-8 válido.";
+"The offline renderer is unavailable. Showing source instead." = "O renderizador offline não está disponível. Exibindo o código-fonte.";
+"The preview request could not be prepared. Showing source instead." = "Não foi possível preparar a prévia. Exibindo o código-fonte.";
+"This document does not contain a diagram yet." = "Este documento ainda não contém um diagrama.";
+"Unable to read Mermaid document" = "Não foi possível ler o documento Mermaid";
+"Unable to render Mermaid preview" = "Não foi possível renderizar a prévia Mermaid";

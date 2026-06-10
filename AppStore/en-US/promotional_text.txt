@@ -1,1 +1,1 @@
-Write Mermaid diagrams, preview them instantly, and export without leaving your Mac.
+Preview Mermaid files with Finder Quick Look, edit diagrams instantly, and export without leaving your Mac.

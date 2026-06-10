@@ -19,6 +19,7 @@
           Meditor
         </a>
         <div class="nav-links">
+          <a href="#quick-look">Quick Look</a>
           <a href="#recursos">Recursos</a>
           <a href="{{ '/privacy/' | relative_url }}">Privacidade</a>
           <a href="{{ '/support/' | relative_url }}">Suporte</a>
@@ -49,12 +50,50 @@
         </div>
       </section>
 
+      <section class="section shell quick-look-section" id="quick-look">
+        <div class="section-heading">
+          <span class="eyebrow">Quick Look no Finder</span>
+          <h2>Descubra o diagrama antes mesmo de abrir o app.</h2>
+          <p>
+            Selecione qualquer arquivo <code>.mmd</code> ou <code>.mermaid</code>
+            no Finder e pressione espaço. A prévia é renderizada localmente,
+            ajustada automaticamente à janela e sem abrir o Meditor.
+          </p>
+        </div>
+        <div class="demo-frame">
+          {% assign quick_look_demo = site.static_files | where: "path", "/assets/quick-look-demo.mp4" | first %}
+          {% if quick_look_demo %}
+          <video
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="{{ '/assets/quick-look-demo.jpg' | relative_url }}"
+            aria-label="Demonstração do Quick Look renderizando um arquivo Mermaid no Finder"
+          >
+            <source src="{{ '/assets/quick-look-demo.mp4' | relative_url }}" type="video/mp4">
+            Seu navegador não suporta vídeo HTML.
+          </video>
+          {% else %}
+          <img
+            src="{{ '/assets/quick-look-preview.svg' | relative_url }}"
+            alt="Ilustração animada do Quick Look renderizando um arquivo Mermaid no Finder"
+          >
+          {% endif %}
+        </div>
+      </section>
+
       <section class="section shell" id="recursos">
         <div class="section-heading">
           <h2>Feito para transformar ideias em diagramas.</h2>
           <p>Uma experiência focada, sem contas, anúncios ou distrações.</p>
         </div>
         <div class="feature-grid">
+          <article class="feature">
+            <div class="feature-icon">␣</div>
+            <h3>Quick Look no Finder</h3>
+            <p>Pressione espaço sobre um arquivo Mermaid para ver o diagrama sem abrir o app.</p>
+          </article>
           <article class="feature">
             <div class="feature-icon">⌘</div>
             <h3>Prévia instantânea</h3>
