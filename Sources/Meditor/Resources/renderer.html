@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }
+    body { user-select: none; cursor: grab; }
+    body.dragging { cursor: grabbing; }
+    #viewport { position: absolute; inset: 0; overflow: hidden; }
+    #diagram {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: 0 0;
+      will-change: transform, width, height;
+      transition: opacity 140ms ease;
+    }
+    #diagram svg {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      overflow: visible;
+      shape-rendering: geometricPrecision;
+      text-rendering: optimizeLegibility;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewport"><div id="diagram"></div></div>
+  <script src="mermaid.min.js"></script>
+  <script>
+    (() => {
+      const graph = document.getElementById("diagram");
+      let scale = 1;
+      let offsetX = 0;
+      let offsetY = 0;
+      let dragging = false;
+      let pointerX = 0;
+      let pointerY = 0;
+      let naturalWidth = 0;
+      let naturalHeight = 0;
+      let hasRendered = false;
+
+      const post = payload => window.webkit.messageHandlers.meditor.postMessage(payload);
+      const transform = () => {
+        const width = Math.max(naturalWidth * scale, 1);
+        const height = Math.max(naturalHeight * scale, 1);
+        graph.style.width = `${width}px`;
+        graph.style.height = `${height}px`;
+        graph.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      };
+      const dimensions = svg => {
+        const box = svg.viewBox && svg.viewBox.baseVal;
+        return {
+          width: Number(box && box.width ? box.width : svg.getBoundingClientRect().width),
+          height: Number(box && box.height ? box.height : svg.getBoundingClientRect().height)
+        };
+      };
+      const fitScale = maxScale => {
+        if (!naturalWidth || !naturalHeight) return 1;
+        const padding = 64;
+        return Math.max(
+          Math.min(
+            (window.innerWidth - padding) / naturalWidth,
+            (window.innerHeight - padding) / naturalHeight,
+            maxScale
+          ),
+          0.08
+        );
+      };
+      const fit = maxScale => {
+        scale = fitScale(maxScale);
+        offsetX = 0;
+        offsetY = 0;
+        transform();
+      };
+      const errorLocation = error => {
+        const loc = error && error.hash && error.hash.loc;
+        return {
+          line: Number(loc && (loc.first_line || loc.line)) || null,
+          column: Number(loc && (loc.first_column || loc.column)) || null
+        };
+      };
+      const errorMessage = error => {
+        const raw = String(error && (error.str || error.message) || error || "Unable to render diagram");
+        return raw.split("\n")[0].replace(/^Error:\s*/, "");
+      };
+
+      window.Meditor = {
+        async render(request) {
+          try {
+            mermaid.initialize({
+              startOnLoad: false,
+              securityLevel: "strict",
+              theme: request.theme,
+              suppressErrorRendering: true
+            });
+            await mermaid.parse(request.code);
+            const diagramType = mermaid.detectType(request.code);
+            const rendered = await mermaid.render(`meditor-${request.id}`, request.code);
+            graph.innerHTML = rendered.svg;
+            graph.querySelectorAll("a").forEach(link => {
+              link.removeAttribute("href");
+              link.style.pointerEvents = "none";
+            });
+            graph.style.opacity = "1";
+            const svg = graph.querySelector("svg");
+            const size = dimensions(svg);
+            naturalWidth = size.width;
+            naturalHeight = size.height;
+            svg.removeAttribute("width");
+            svg.removeAttribute("height");
+            svg.style.maxWidth = "none";
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            if (!hasRendered) {
+              fit(1.15);
+              hasRendered = true;
+            } else {
+              transform();
+            }
+            post({
+              id: request.id,
+              success: true,
+              svg: rendered.svg,
+              diagramType,
+              width: size.width,
+              height: size.height
+            });
+          } catch (error) {
+            const location = errorLocation(error);
+            post({
+              id: request.id,
+              success: false,
+              message: errorMessage(error),
+              line: location.line,
+              column: location.column
+            });
+          }
+        },
+        clear() {
+          graph.innerHTML = "";
+          naturalWidth = 0;
+          naturalHeight = 0;
+          hasRendered = false;
+          scale = 1;
+          offsetX = 0;
+          offsetY = 0;
+        },
+        zoomBy(factor) {
+          scale = Math.max(0.08, Math.min(6, scale * factor));
+          transform();
+        },
+        fit() {
+          fit(1.15);
+        },
+        metrics() {
+          const svg = graph.querySelector("svg");
+          const rect = svg ? svg.getBoundingClientRect() : null;
+          return {
+            scale,
+            naturalWidth,
+            naturalHeight,
+            displayedWidth: rect ? rect.width : 0,
+            displayedHeight: rect ? rect.height : 0,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight
+          };
+        }
+      };
+
+      window.addEventListener("wheel", event => {
+        event.preventDefault();
+        if (event.metaKey || event.ctrlKey) {
+          const factor = event.deltaY < 0 ? 1.08 : 0.92;
+          window.Meditor.zoomBy(factor);
+        } else {
+          offsetX -= event.deltaX;
+          offsetY -= event.deltaY;
+          transform();
+        }
+      }, { passive: false });
+
+      window.addEventListener("pointerdown", event => {
+        dragging = true;
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        document.body.classList.add("dragging");
+      });
+      window.addEventListener("pointermove", event => {
+        if (!dragging) return;
+        offsetX += event.clientX - pointerX;
+        offsetY += event.clientY - pointerY;
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        transform();
+      });
+      window.addEventListener("pointerup", () => {
+        dragging = false;
+        document.body.classList.remove("dragging");
+      });
+      window.addEventListener("dblclick", () => window.Meditor.fit());
+      window.addEventListener("resize", () => {
+        if (hasRendered) window.Meditor.fit();
+      });
+
+      transform();
+      post({ event: "ready" });
+    })();
+  </script>
+</body>
+</html>
