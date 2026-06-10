@@ -8,6 +8,8 @@ struct DocumentWorkspace: View {
     @State private var navigateToLine: Int?
     @State private var exportErrorMessage: String?
     @State private var showsTemplateGallery = true
+    @State private var showsPublishPopover = false
+    @State private var showsPublishedLinks = false
 
     @AppStorage("editorFontSize") private var editorFontSize = 14.0
     @AppStorage("editorFontName") private var editorFontName = "SF Mono"
@@ -42,13 +44,17 @@ struct DocumentWorkspace: View {
             WorkspaceActions(
                 setMode: { mode = $0 },
                 fitPreview: renderStore.fit,
-                exportSVG: { export(.svg) }
+                exportSVG: { export(.svg) },
+                showPublishedLinks: { showsPublishedLinks = true }
             )
         )
         .alert("Export failed", isPresented: exportAlertIsPresented) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(exportErrorMessage ?? "")
+        }
+        .sheet(isPresented: $showsPublishedLinks) {
+            PublishedLinksView()
         }
     }
 
@@ -176,6 +182,22 @@ struct DocumentWorkspace: View {
             }
             Button(action: renderStore.zoomIn) {
                 Label("Zoom in", systemImage: "plus.magnifyingglass")
+            }
+        }
+
+        ToolbarItem {
+            Button {
+                showsPublishPopover = true
+            } label: {
+                Label("Publish", systemImage: "square.and.arrow.up.on.square")
+            }
+            .disabled(renderStore.lastSVG == nil)
+            .popover(isPresented: $showsPublishPopover, arrowEdge: .bottom) {
+                PublishPopover(
+                    code: document.text,
+                    theme: theme,
+                    svg: renderStore.lastSVG
+                )
             }
         }
 

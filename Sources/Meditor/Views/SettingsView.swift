@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("wrapLines") private var wrapsLines = false
     @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
     @AppStorage("transparentExport") private var transparentExport = true
+    @AppStorage("shareBaseURL") private var shareBaseURL = "https://meditor.dev"
     @State private var showsLicenses = false
 
     var body: some View {
@@ -53,6 +54,14 @@ struct SettingsView: View {
                     }
                 }
                 Toggle("Transparent background when possible", isOn: $transparentExport)
+            }
+
+            Section("Sharing") {
+                TextField("Service URL", text: $shareBaseURL, prompt: Text("https://meditor.dev"))
+                    .textFieldStyle(.roundedBorder)
+                Text("Where the Publish button sends diagrams. Change this to point at your own meditor-cloud instance.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section("About & Legal") {

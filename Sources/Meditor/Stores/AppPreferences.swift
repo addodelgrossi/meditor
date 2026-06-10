@@ -12,6 +12,9 @@ final class AppPreferences: ObservableObject {
     @AppStorage("wrapLines") var wrapLines = false
     @AppStorage("defaultExportScale") var defaultExportScale = ExportScale.two.rawValue
     @AppStorage("transparentExport") var transparentExport = true
+    // Base URL of the share backend. Configurable so anyone forking the app can
+    // point at their own meditor-cloud instance.
+    @AppStorage("shareBaseURL") var shareBaseURL = "https://meditor.dev"
 
     var appAppearance: AppAppearance {
         get { AppAppearance.resolved(appAppearanceRaw) }

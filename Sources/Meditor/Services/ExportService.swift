@@ -30,6 +30,55 @@ enum ExportService {
         NSPasteboard.general.setString(svg, forType: .string)
     }
 
+    /// Render the diagram onto a fixed 1200x630 canvas for use as a social
+    /// preview (og:image). The diagram is centered and letterboxed on a light
+    /// background with padding — light reads better in social cards even when
+    /// the author edits in dark mode.
+    static func socialPreviewPNG(svg: String) throws -> Data {
+        let canvas = NSSize(width: 1200, height: 630)
+        let padding = 64.0
+        let diagram = try image(from: svg)
+
+        guard let bitmap = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: Int(canvas.width),
+            pixelsHigh: Int(canvas.height),
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        ) else {
+            throw ExportError.rasterizationFailed
+        }
+        bitmap.size = canvas
+
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
+        NSColor.white.setFill()
+        NSRect(origin: .zero, size: canvas).fill()
+
+        let available = NSSize(width: canvas.width - padding * 2, height: canvas.height - padding * 2)
+        let natural = diagram.size
+        let scale = natural.width > 0 && natural.height > 0
+            ? min(available.width / natural.width, available.height / natural.height)
+            : 1
+        let drawn = NSSize(width: natural.width * scale, height: natural.height * scale)
+        let origin = NSPoint(
+            x: (canvas.width - drawn.width) / 2,
+            y: (canvas.height - drawn.height) / 2
+        )
+        diagram.draw(in: NSRect(origin: origin, size: drawn))
+        NSGraphicsContext.restoreGraphicsState()
+
+        guard let data = bitmap.representation(using: .png, properties: [:]) else {
+            throw ExportError.rasterizationFailed
+        }
+        return data
+    }
+
     static func copyPNG(_ svg: String, scale: ExportScale, transparentBackground: Bool = true) throws {
         let data = try pngData(svg: svg, scale: scale, transparentBackground: transparentBackground)
         NSPasteboard.general.clearContents()

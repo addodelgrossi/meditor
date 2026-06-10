@@ -4,6 +4,7 @@ struct WorkspaceActions {
     let setMode: (WorkspaceMode) -> Void
     let fitPreview: () -> Void
     let exportSVG: () -> Void
+    let showPublishedLinks: () -> Void
 }
 
 private struct WorkspaceActionsKey: FocusedValueKey {
@@ -48,6 +49,13 @@ struct MeditorCommands: Commands {
                 actions?.exportSVG()
             }
             .keyboardShortcut("e", modifiers: [.command, .shift])
+
+            Divider()
+
+            Button("Published Links…") {
+                actions?.showPublishedLinks()
+            }
+            .keyboardShortcut("l", modifiers: [.command, .shift])
         }
     }
 }
