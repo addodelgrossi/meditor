@@ -4,7 +4,8 @@ struct WorkspaceActions {
     let setMode: (WorkspaceMode) -> Void
     let fitPreview: () -> Void
     let exportSVG: () -> Void
-    let showPublishedLinks: () -> Void
+    let publish: () -> Void
+    let canPublish: Bool
 }
 
 private struct WorkspaceActionsKey: FocusedValueKey {
@@ -20,8 +21,23 @@ extension FocusedValues {
 
 struct MeditorCommands: Commands {
     @FocusedValue(\.workspaceActions) private var actions
+    @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("Publish…") {
+                actions?.publish()
+            }
+            .keyboardShortcut("p", modifiers: [.command, .shift])
+            .disabled(actions?.canPublish != true)
+
+            Button("Published Links…") {
+                openWindow(id: "published-links")
+            }
+
+            Divider()
+        }
+
         CommandMenu("Diagram") {
             Button("Editor") {
                 actions?.setMode(.editor)
@@ -50,12 +66,6 @@ struct MeditorCommands: Commands {
             }
             .keyboardShortcut("e", modifiers: [.command, .shift])
 
-            Divider()
-
-            Button("Published Links…") {
-                actions?.showPublishedLinks()
-            }
-            .keyboardShortcut("l", modifiers: [.command, .shift])
         }
     }
 }

@@ -9,6 +9,8 @@ struct SettingsView: View {
     @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
     @AppStorage("transparentExport") private var transparentExport = true
     @AppStorage("shareBaseURL") private var shareBaseURL = "https://meditor.dev"
+    @State private var shareBaseURLDraft = UserDefaults.standard.string(forKey: "shareBaseURL")
+        ?? ShareServiceURL.defaultValue
     @State private var showsLicenses = false
 
     var body: some View {
@@ -56,9 +58,19 @@ struct SettingsView: View {
                 Toggle("Transparent background when possible", isOn: $transparentExport)
             }
 
-            Section("Sharing") {
-                TextField("Service URL", text: $shareBaseURL, prompt: Text("https://meditor.dev"))
+            Section("Publish") {
+                TextField("Base URL", text: $shareBaseURLDraft, prompt: Text(ShareServiceURL.defaultValue))
                     .textFieldStyle(.roundedBorder)
+                    .onChange(of: shareBaseURLDraft) { _, newValue in
+                        if let serviceURL = try? ShareServiceURL(newValue) {
+                            shareBaseURL = serviceURL.string
+                        }
+                    }
+                if (try? ShareServiceURL(shareBaseURLDraft)) == nil {
+                    Text("Use HTTPS, or HTTP only for a local development server.")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
                 Text("Where the Publish button sends diagrams. Change this to point at your own meditor-cloud instance.")
                     .font(.caption)
                     .foregroundStyle(.secondary)

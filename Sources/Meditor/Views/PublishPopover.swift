@@ -1,27 +1,18 @@
-import AppKit
 import SwiftUI
 
 /// Popover shown from the toolbar's Publish button. Lets the user pick a
 /// lifetime, publishes the rendered diagram, and surfaces the resulting link.
 struct PublishPopover: View {
-    let code: String
-    let theme: MermaidTheme
-    let svg: String?
-
-    @State private var duration: ShareDuration = .oneDay
-    @State private var phase: Phase = .form
+    @StateObject private var viewModel: PublishViewModel
     @Environment(\.dismiss) private var dismiss
 
-    private enum Phase {
-        case form
-        case publishing
-        case published(ShareResponse)
-        case failed(String)
+    init(code: String, theme: MermaidTheme) {
+        _viewModel = StateObject(wrappedValue: PublishViewModel(code: code, theme: theme))
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            switch phase {
+            switch viewModel.phase {
             case .form:
                 formContent
             case .publishing:
@@ -45,7 +36,7 @@ struct PublishPopover: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Expires after")
                     .font(.subheadline.weight(.medium))
-                Picker("Expires after", selection: $duration) {
+                Picker("Expires after", selection: $viewModel.duration) {
                     ForEach(ShareDuration.allCases) { option in
                         Text(option.label).tag(option)
                     }
@@ -63,13 +54,12 @@ struct PublishPopover: View {
             .foregroundStyle(.secondary)
 
             Button {
-                publish()
+                Task { await viewModel.publish() }
             } label: {
                 Text("Publish").frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .disabled(svg == nil)
         }
     }
 
@@ -100,8 +90,8 @@ struct PublishPopover: View {
                 .foregroundStyle(.secondary)
 
             HStack {
-                Button("Copy link") { copy(response.url) }
-                Button("Open") { openURL(response.url) }
+                Button("Copy link") { viewModel.copy(response.url) }
+                Button("Open") { viewModel.open(response.url) }
                 Spacer()
                 Button("Done") { dismiss() }
                     .keyboardShortcut(.defaultAction)
@@ -119,7 +109,7 @@ struct PublishPopover: View {
             HStack {
                 Spacer()
                 Button("Cancel") { dismiss() }
-                Button("Try again") { phase = .form }
+                Button("Try again") { viewModel.tryAgain() }
                     .keyboardShortcut(.defaultAction)
             }
         }
@@ -130,43 +120,4 @@ struct PublishPopover: View {
             .font(.headline)
     }
 
-    // MARK: - Actions
-
-    private func publish() {
-        guard let svg else { return }
-        phase = .publishing
-        Task {
-            do {
-                let response = try await PublishService().publish(
-                    code: code,
-                    theme: theme,
-                    svg: svg,
-                    duration: duration
-                )
-                copy(response.url)
-                PublishedLinkStore.shared.add(
-                    PublishedLink(
-                        id: response.id,
-                        url: response.url,
-                        createdAt: Date(),
-                        expiresAt: response.expiresAt
-                    ),
-                    deleteToken: response.deleteToken
-                )
-                phase = .published(response)
-            } catch {
-                phase = .failed(error.localizedDescription)
-            }
-        }
-    }
-
-    private func copy(_ string: String) {
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(string, forType: .string)
-    }
-
-    private func openURL(_ string: String) {
-        guard let url = URL(string: string) else { return }
-        NSWorkspace.shared.open(url)
-    }
 }

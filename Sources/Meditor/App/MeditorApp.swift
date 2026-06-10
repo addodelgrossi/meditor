@@ -20,6 +20,12 @@ struct MeditorApp: App {
             SettingsView()
                 .preferredColorScheme(appAppearance.colorScheme)
         }
+
+        Window("Published Links", id: "published-links") {
+            PublishedLinksView()
+                .preferredColorScheme(appAppearance.colorScheme)
+        }
+        .defaultSize(width: 620, height: 430)
     }
 
     private var appAppearance: AppAppearance {

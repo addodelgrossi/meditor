@@ -10,10 +10,20 @@ struct PublishedLinksView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { _ in
+            content
+        }
+    }
+
+    private var content: some View {
         VStack(spacing: 0) {
             HStack {
                 Text("Published Links").font(.headline)
                 Spacer()
+                Button("Clear Expired") {
+                    store.clearExpired()
+                }
+                .disabled(!store.links.contains(where: \.isExpired))
                 Button("Done") { dismiss() }
                     .keyboardShortcut(.defaultAction)
             }
@@ -32,8 +42,7 @@ struct PublishedLinksView: View {
                 .listStyle(.inset)
             }
         }
-        .frame(width: 460, height: 360)
-        .onAppear { store.pruneExpired() }
+        .frame(minWidth: 560, minHeight: 360)
         .alert("Unpublish failed", isPresented: errorAlertIsPresented) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -59,15 +68,16 @@ struct PublishedLinksView: View {
                     .font(.callout.monospaced())
                     .lineLimit(1)
                     .truncationMode(.middle)
-                if link.isExpired {
-                    Text("Expired")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Expires \(link.expiresAt.formatted(.relative(presentation: .named)))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    Text("Created \(link.createdAt.formatted(date: .abbreviated, time: .shortened))")
+                    if link.isExpired {
+                        Text("Expired")
+                    } else {
+                        Text("Expires \(link.expiresAt.formatted(.relative(presentation: .named)))")
+                    }
                 }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -90,6 +100,7 @@ struct PublishedLinksView: View {
             }
         }
         .padding(.vertical, 4)
+        .opacity(link.isExpired ? 0.55 : 1)
     }
 
     // MARK: - Actions
@@ -104,7 +115,8 @@ struct PublishedLinksView: View {
         Task {
             defer { working.remove(link.id) }
             do {
-                try await PublishService().unpublish(id: link.id, deleteToken: token)
+                let baseURL = try ShareServiceURL(publishedLink: link.url)
+                try await ShareClient(baseURL: baseURL).unpublish(id: link.id, deleteToken: token)
                 store.forget(link.id)
             } catch {
                 errorMessage = error.localizedDescription
