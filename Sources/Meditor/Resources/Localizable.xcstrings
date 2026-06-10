@@ -1,0 +1,281 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Architecture" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arquitetura" } }
+      }
+    },
+    "Base" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Base" } }
+      }
+    },
+    "Choose a template or begin typing Mermaid." : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha um modelo ou comece a escrever Mermaid." } }
+      }
+    },
+    "Class" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Classes" } }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar" } }
+      }
+    },
+    "Copy PNG" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar PNG" } }
+      }
+    },
+    "Copy SVG" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar SVG" } }
+      }
+    },
+    "Dark" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escuro" } }
+      }
+    },
+    "Default" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Padrão" } }
+      }
+    },
+    "Default PNG scale" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escala PNG padrão" } }
+      }
+    },
+    "Default theme" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tema padrão" } }
+      }
+    },
+    "Describe a domain model" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Descreva um modelo de domínio" } }
+      }
+    },
+    "Diagram preview" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Pré-visualização do diagrama" } }
+      }
+    },
+    "Diagram theme" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tema do diagrama" } }
+      }
+    },
+    "Editor" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Editor" } }
+      }
+    },
+    "Entity relationship" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Entidade e relacionamento" } }
+      }
+    },
+    "Export" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Exportar" } }
+      }
+    },
+    "Export failed" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Falha ao exportar" } }
+      }
+    },
+    "Explain an interaction" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Explique uma interação" } }
+      }
+    },
+    "Explore an idea" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Explore uma ideia" } }
+      }
+    },
+    "Fit diagram" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ajustar diagrama" } }
+      }
+    },
+    "Flowchart" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Fluxograma" } }
+      }
+    },
+    "Font" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Fonte" } }
+      }
+    },
+    "Font size" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tamanho da fonte" } }
+      }
+    },
+    "Forest" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Floresta" } }
+      }
+    },
+    "Gantt" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Gantt" } }
+      }
+    },
+    "Go to error" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ir para o erro" } }
+      }
+    },
+    "Layout" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Layout" } }
+      }
+    },
+    "Map a clear process" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mapeie um processo com clareza" } }
+      }
+    },
+    "Mermaid source editor" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Editor de código Mermaid" } }
+      }
+    },
+    "Model connected data" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Modele dados conectados" } }
+      }
+    },
+    "Moves the cursor to the Mermaid syntax error" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Move o cursor para o erro de sintaxe Mermaid" } }
+      }
+    },
+    "Mindmap" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mapa mental" } }
+      }
+    },
+    "Neutral" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Neutro" } }
+      }
+    },
+    "Preview" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Prévia" } }
+      }
+    },
+    "Preview paused" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Prévia pausada" } }
+      }
+    },
+    "Plan work over time" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Planeje o trabalho ao longo do tempo" } }
+      }
+    },
+    "Rendering…" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Renderizando…" } }
+      }
+    },
+    "Sequence" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sequência" } }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes" } }
+      }
+    },
+    "Show a system" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostre um sistema" } }
+      }
+    },
+    "Split" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Dividido" } }
+      }
+    },
+    "Start with an idea" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Comece com uma ideia" } }
+      }
+    },
+    "Start blank" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Começar em branco" } }
+      }
+    },
+    "State" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Estados" } }
+      }
+    },
+    "Templates" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Modelos" } }
+      }
+    },
+    "Theme" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tema" } }
+      }
+    },
+    "The diagram could not be converted." : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível converter o diagrama." } }
+      }
+    },
+    "The image could not be created." : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível criar a imagem." } }
+      }
+    },
+    "Transparent background when possible" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Fundo transparente quando possível" } }
+      }
+    },
+    "Unable to render diagram" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível renderizar o diagrama" } }
+      }
+    },
+    "Visualize lifecycle" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Visualize o ciclo de vida" } }
+      }
+    },
+    "Wrap long lines" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Quebrar linhas longas" } }
+      }
+    },
+    "Zoom in" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ampliar" } }
+      }
+    },
+    "Zoom out" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reduzir" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
