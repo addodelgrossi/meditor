@@ -1,0 +1,61 @@
+name: Meditor
+
+options:
+  minimumXcodeGenVersion: 2.45.4
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "26.0"
+  groupSortPosition: top
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    DEAD_CODE_STRIPPING: YES
+    ENABLE_HARDENED_RUNTIME: YES
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    SWIFT_VERSION: "6.0"
+
+targets:
+  Meditor:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/Meditor
+      - path: Assets/Assets.xcassets
+        buildPhase: resources
+    configFiles:
+      Debug: Configuration/Meditor.xcconfig
+      Release: Configuration/Meditor.xcconfig
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: Configuration/Meditor.entitlements
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_USER_SELECTED_FILES: readwrite
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Configuration/Info.plist
+        PRODUCT_MODULE_NAME: Meditor
+        PRODUCT_NAME: Meditor
+    scheme:
+      gatherCoverageData: true
+      testTargets:
+        - MeditorTests
+
+  MeditorTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/MeditorTests
+    dependencies:
+      - target: Meditor
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: QHURUB34Z9
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Meditor.app/Contents/MacOS/Meditor"

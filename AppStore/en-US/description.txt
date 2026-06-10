@@ -1,0 +1,15 @@
+Meditor is a focused, native Mermaid editor for macOS.
+
+Write diagram source in a precise text editor and see a crisp live preview beside it. Everything runs locally, so your documents stay on your Mac and the app works without an account or internet connection.
+
+HIGHLIGHTS
+
+• Native .mmd and .mermaid documents with autosave, undo, and multiple windows
+• Live offline preview with pan, zoom, themes, and last-valid-preview recovery
+• Syntax highlighting, line numbers, completion, and inline error navigation
+• Templates for flowcharts, sequences, classes, states, ER diagrams, Gantt charts, mindmaps, and architecture diagrams
+• Export to SVG, PNG, and PDF
+• Copy SVG or PNG directly to the clipboard
+• English and Brazilian Portuguese interface
+
+Meditor stores diagram source as plain text. Rendering happens locally and document content never leaves the device.

@@ -1,0 +1,5 @@
+flowchart LR
+    Idea([Idea]) --> Draft[Draft]
+    Draft --> Review{Ready?}
+    Review -- Yes --> Ship([Ship])
+    Review -- Not yet --> Draft

@@ -83,5 +83,14 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertFalse(html.contains("https://"))
         XCTAssertFalse(html.contains("http://"))
         XCTAssertTrue(html.contains("securityLevel: \"strict\""))
+        XCTAssertTrue(html.contains("connect-src 'none'"))
+    }
+
+    func testDistributionResourcesAreBundled() throws {
+        let privacy = Bundle.meditorResources.url(forResource: "PrivacyInfo", withExtension: "xcprivacy")
+
+        XCTAssertNotNil(privacy)
+        XCTAssertTrue(LegalResources.licenseText.contains("Copyright (c) 2026 Addo Del Grossi"))
+        XCTAssertTrue(LegalResources.licenseText.contains("MIT License"))
     }
 }

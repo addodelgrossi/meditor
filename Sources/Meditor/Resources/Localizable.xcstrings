@@ -1,9 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "About & Legal" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sobre e Legal" } }
+      }
+    },
     "Architecture" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arquitetura" } }
+      }
+    },
+    "Author" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Autor" } }
       }
     },
     "Base" : {
@@ -69,6 +79,11 @@
     "Diagram theme" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tema do diagrama" } }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Concluído" } }
       }
     },
     "Editor" : {
@@ -171,6 +186,11 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Neutro" } }
       }
     },
+    "Open Source Licenses" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Licenças de código aberto" } }
+      }
+    },
     "Preview" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Prévia" } }
@@ -184,6 +204,11 @@
     "Plan work over time" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Planeje o trabalho ao longo do tempo" } }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Política de Privacidade" } }
       }
     },
     "Rendering…" : {
@@ -221,9 +246,19 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Começar em branco" } }
       }
     },
+    "Source Code" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Código-fonte" } }
+      }
+    },
     "State" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Estados" } }
+      }
+    },
+    "Support" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Suporte" } }
       }
     },
     "Templates" : {
@@ -259,6 +294,11 @@
     "Visualize lifecycle" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Visualize o ciclo de vida" } }
+      }
+    },
+    "Version" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Versão" } }
       }
     },
     "Wrap long lines" : {

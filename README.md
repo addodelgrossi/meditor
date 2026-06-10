@@ -63,6 +63,7 @@ The generated application is placed at `dist/Meditor.app`.
 ```bash
 swift build
 swift test
+./script/generate_project.sh
 ./script/build_and_run.sh --verify
 ```
 
@@ -74,3 +75,34 @@ Mermaid 11.15.0 is vendored for private, offline rendering. Update it with:
 
 Meditor stores diagram source as plain text. Rendering happens locally and
 document content never leaves the device.
+
+## Mac App Store Distribution
+
+The checked-in Xcode project is generated from `project.yml` and shares the
+same sources and tests as the Swift package.
+
+```bash
+brew install xcodegen
+./script/validate_store_assets.sh
+./script/archive.sh
+./script/validate_app_store.sh
+./script/upload_testflight.sh --confirm-upload
+```
+
+The upload command requires the App Store Connect record for
+`com.addodelgrossi.meditor` and valid agreements for the `ADDO DEL GROSSI`
+team; App Store validation requires the same record. Increment
+`CURRENT_PROJECT_VERSION` in
+`Configuration/Meditor.xcconfig` before every upload.
+
+Privacy and support pages live in `docs/` and deploy through GitHub Pages.
+App Store metadata and screenshot guidance live in `AppStore/`. Screenshot
+automation requires Screen & System Audio Recording permission for Codex or
+Terminal. The remaining account and submission steps are tracked in
+`AppStore/RELEASE_CHECKLIST.md`.
+
+## License
+
+Meditor is available under the [MIT License](LICENSE). Mermaid is bundled
+under its own MIT license in
+`Sources/Meditor/Resources/Mermaid/LICENSE-mermaid.txt`.

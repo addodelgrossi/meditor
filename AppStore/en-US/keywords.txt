@@ -1,0 +1,1 @@
+mermaid,diagram,flowchart,sequence,architecture,developer,editor,svg

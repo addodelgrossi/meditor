@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage("wrapLines") private var wrapsLines = false
     @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
     @AppStorage("transparentExport") private var transparentExport = true
+    @State private var showsLicenses = false
 
     var body: some View {
         Form {
@@ -44,9 +45,23 @@ struct SettingsView: View {
                 }
                 Toggle("Transparent background when possible", isOn: $transparentExport)
             }
+
+            Section("About & Legal") {
+                LabeledContent("Version", value: AppInfo.versionDescription)
+                LabeledContent("Author", value: AppInfo.author)
+                Link("Privacy Policy", destination: AppInfo.privacyURL)
+                Link("Support", destination: AppInfo.supportURL)
+                Link("Source Code", destination: AppInfo.sourceURL)
+                Button("Open Source Licenses") {
+                    showsLicenses = true
+                }
+            }
         }
         .formStyle(.grouped)
-        .frame(width: 520, height: 410)
+        .frame(width: 520, height: 610)
         .navigationTitle("Settings")
+        .sheet(isPresented: $showsLicenses) {
+            LicensesView()
+        }
     }
 }

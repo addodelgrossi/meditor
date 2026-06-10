@@ -1,0 +1,1 @@
+Write Mermaid diagrams, preview them instantly, and export without leaving your Mac.

@@ -1,0 +1,10 @@
+Meditor requires no account and has no network-based features.
+
+To review the main workflow:
+1. Launch the app and choose any built-in template.
+2. Edit Mermaid source in the left pane and verify the live preview on the right.
+3. Use the layout selector to switch between editor, split, and preview modes.
+4. Use Export to save SVG, PNG, or PDF through the standard macOS save panel.
+5. Open Settings to review editor/export preferences and the About & Legal section.
+
+All Mermaid rendering is performed locally using the bundled JavaScript resource. WKWebView requires the network client entitlement for its sandboxed helper process, but the renderer has a Content Security Policy with connect-src 'none' and navigation is restricted to local file/about URLs. The app makes no network requests and does not transmit document content.

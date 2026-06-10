@@ -1,0 +1,1 @@
+Escreva diagramas Mermaid, veja a prévia instantaneamente e exporte sem sair do Mac.

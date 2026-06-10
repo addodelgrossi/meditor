@@ -1,0 +1,36 @@
+app:
+  name: "Meditor: Mermaid Editor"
+  fallback_name: "Meditor for Mermaid"
+  bundle_id: com.addodelgrossi.meditor
+  sku: meditor-macos-001
+  platform: macOS
+  version: 1.0.0
+  build: 1
+  minimum_os: "26.0"
+  primary_category: Developer Tools
+  secondary_category: Productivity
+  price: Free
+  release: Manual
+  availability: Worldwide
+  team: "ADDO DEL GROSSI (QHURUB34Z9)"
+
+declarations:
+  data_collection: None
+  tracking: false
+  advertising: false
+  login_required: false
+  in_app_purchases: false
+  non_exempt_encryption: false
+  expected_age_rating: 4+
+  custom_eula: false
+
+urls:
+  privacy: https://addodelgrossi.github.io/meditor/privacy/
+  support: https://addodelgrossi.github.io/meditor/support/
+  marketing: https://addodelgrossi.github.io/meditor/
+
+review:
+  contact_name: Addo Del Grossi
+  contact_email: FILL_IN_APP_STORE_CONNECT
+  contact_phone: FILL_IN_APP_STORE_CONNECT
+  sign_in_required: false

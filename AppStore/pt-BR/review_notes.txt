@@ -1,0 +1,10 @@
+O Meditor não exige conta e não possui recursos baseados em rede.
+
+Para revisar o fluxo principal:
+1. Abra o aplicativo e escolha qualquer modelo incluído.
+2. Edite o código Mermaid no painel esquerdo e verifique a prévia ao vivo à direita.
+3. Use o seletor de layout para alternar entre editor, dividido e prévia.
+4. Use Exportar para salvar SVG, PNG ou PDF pelo painel padrão do macOS.
+5. Abra Ajustes para revisar as preferências e a seção Sobre e Legal.
+
+Toda renderização Mermaid acontece localmente usando o recurso JavaScript incluído. O WKWebView exige o entitlement de cliente de rede para seu processo auxiliar em sandbox, mas o renderer possui uma Content Security Policy com connect-src 'none' e a navegação é restrita a URLs locais file/about. O aplicativo não faz requisições de rede e não transmite o conteúdo dos documentos.

@@ -1,0 +1,15 @@
+Meditor é um editor Mermaid nativo e focado para macOS.
+
+Escreva o código do diagrama em um editor preciso e veja uma prévia nítida ao lado. Tudo funciona localmente, então seus documentos permanecem no Mac e o aplicativo não exige conta nem conexão com a internet.
+
+DESTAQUES
+
+• Documentos .mmd e .mermaid nativos com salvamento automático, desfazer e múltiplas janelas
+• Prévia offline ao vivo com movimento, zoom, temas e recuperação da última prévia válida
+• Destaque de sintaxe, números de linha, sugestões e navegação para erros
+• Modelos para fluxogramas, sequências, classes, estados, entidade-relacionamento, Gantt, mapas mentais e arquitetura
+• Exportação para SVG, PNG e PDF
+• Cópia de SVG ou PNG diretamente para a área de transferência
+• Interface em inglês e português brasileiro
+
+O Meditor armazena o código dos diagramas como texto simples. A renderização acontece localmente e o conteúdo dos documentos nunca deixa o dispositivo.

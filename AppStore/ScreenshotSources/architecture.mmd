@@ -1,0 +1,7 @@
+architecture-beta
+    group app(cloud)[Meditor]
+    service editor(server)[Editor] in app
+    service renderer(server)[Renderer] in app
+    service file(disk)[Document] in app
+    editor:R -- L:renderer
+    editor:B -- T:file
