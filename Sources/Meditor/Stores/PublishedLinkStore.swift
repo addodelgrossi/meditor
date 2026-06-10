@@ -10,42 +10,43 @@ final class PublishedLinkStore: ObservableObject {
     @Published private(set) var links: [PublishedLink] = []
 
     private let fileURL: URL
+    private let tokenStore: any DeleteTokenStoring
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
-    init(fileURL: URL? = nil) {
+    init(fileURL: URL? = nil, tokenStore: any DeleteTokenStoring = KeychainStore()) {
         self.fileURL = fileURL ?? Self.defaultFileURL()
+        self.tokenStore = tokenStore
         encoder.dateEncodingStrategy = .iso8601
         decoder.dateDecodingStrategy = .iso8601
         load()
     }
 
     func add(_ link: PublishedLink, deleteToken: String) {
-        KeychainStore.setDeleteToken(deleteToken, for: link.id)
+        tokenStore.setDeleteToken(deleteToken, for: link.id)
         links.removeAll { $0.id == link.id }
         links.insert(link, at: 0)
         save()
     }
 
     /// Remove a link from local history and forget its token. Does not call the
-    /// server — see [PublishService.unpublish].
+    /// server — see [ShareClient.unpublish].
     func forget(_ id: String) {
-        KeychainStore.removeDeleteToken(for: id)
+        tokenStore.removeDeleteToken(for: id)
         links.removeAll { $0.id == id }
         save()
     }
 
     func deleteToken(for id: String) -> String? {
-        KeychainStore.deleteToken(for: id)
+        tokenStore.deleteToken(for: id)
     }
 
-    /// Drop entries that have passed their expiry; their server data is already
-    /// gone via KV TTL.
-    func pruneExpired() {
+    /// Drop entries that have passed their expiry after an explicit user action.
+    func clearExpired() {
         let expired = links.filter(\.isExpired)
         guard !expired.isEmpty else { return }
         for link in expired {
-            KeychainStore.removeDeleteToken(for: link.id)
+            tokenStore.removeDeleteToken(for: link.id)
         }
         links.removeAll(where: \.isExpired)
         save()
@@ -59,6 +60,9 @@ final class PublishedLinkStore: ObservableObject {
             return
         }
         links = stored.sorted { $0.createdAt > $1.createdAt }
+        if data.range(of: Data("\"ttlSeconds\"".utf8)) == nil {
+            save()
+        }
     }
 
     private func save() {

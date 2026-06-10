@@ -31,5 +31,9 @@ final class AppPreferences: ObservableObject {
         set { defaultExportScale = newValue.rawValue }
     }
 
+    var shareServiceURL: ShareServiceURL {
+        (try? ShareServiceURL(shareBaseURL)) ?? .defaultService
+    }
+
     private init() {}
 }

@@ -2,6 +2,9 @@ import Foundation
 
 enum PublishError: LocalizedError, Equatable {
     case offline
+    case invalidBaseURL
+    case invalidRequest
+    case unauthorized
     case rateLimited
     case payloadTooLarge
     case invalidResponse
@@ -11,14 +14,20 @@ enum PublishError: LocalizedError, Equatable {
         switch self {
         case .offline:
             String(localized: "No internet connection. Connect and try again.")
+        case .invalidBaseURL:
+            String(localized: "Enter a valid HTTPS service URL.")
+        case .invalidRequest:
+            String(localized: "The diagram could not be published. Check it and try again.")
+        case .unauthorized:
+            String(localized: "This link could not be unpublished.")
         case .rateLimited:
-            String(localized: "You're publishing too often. Wait a few minutes and try again.")
+            String(localized: "Too many publishes, try again in a few minutes.")
         case .payloadTooLarge:
-            String(localized: "This diagram is too large to publish.")
+            String(localized: "The diagram or preview image is too large to publish.")
         case .invalidResponse:
             String(localized: "The server returned an unexpected response.")
-        case let .server(status):
-            String(localized: "Publishing failed (error \(status)). Please try again.")
+        case .server:
+            String(localized: "The publish service is unavailable. Please try again.")
         }
     }
 }
@@ -26,20 +35,36 @@ enum PublishError: LocalizedError, Equatable {
 /// Talks to the meditor-cloud share API. The diagram source never leaves the
 /// device except through an explicit publish.
 @MainActor
-struct PublishService {
-    var baseURL: String = AppPreferences.shared.shareBaseURL
-    var session: URLSession = .shared
+struct ShareClient {
+    let baseURL: ShareServiceURL
+    var session: URLSession
 
-    func publish(code: String, theme: MermaidTheme, svg: String, duration: ShareDuration) async throws -> ShareResponse {
-        let png = try ExportService.socialPreviewPNG(svg: svg)
+    init(
+        baseURL: ShareServiceURL? = nil,
+        session: URLSession = .shared
+    ) {
+        self.baseURL = baseURL ?? AppPreferences.shared.shareServiceURL
+        self.session = session
+    }
+
+    func publish(code: String, theme: MermaidTheme, ogImage: Data, duration: ShareDuration) async throws -> ShareResponse {
+        guard !code.isEmpty else {
+            throw PublishError.invalidRequest
+        }
+        guard code.utf8.count <= ShareLimits.maximumCodeBytes else {
+            throw PublishError.payloadTooLarge
+        }
+        guard ogImage.count <= ShareLimits.maximumOGImageBytes else {
+            throw PublishError.payloadTooLarge
+        }
         let body = ShareRequest(
             code: code,
-            ogImage: png.base64EncodedString(),
+            ogImage: ogImage.base64EncodedString(),
             ttlSeconds: duration.ttlSeconds,
             theme: theme.mermaidValue
         )
 
-        var request = try makeRequest(path: "/api/v1/share", method: "POST")
+        var request = makeRequest(path: "api/v1/share", method: "POST")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(body)
 
@@ -51,6 +76,8 @@ struct PublishService {
             } catch {
                 throw PublishError.invalidResponse
             }
+        case 400:
+            throw PublishError.invalidRequest
         case 413:
             throw PublishError.payloadTooLarge
         case 429:
@@ -61,13 +88,15 @@ struct PublishService {
     }
 
     func unpublish(id: String, deleteToken: String) async throws {
-        var request = try makeRequest(path: "/api/v1/share/\(id)", method: "DELETE")
+        var request = makeRequest(path: "api/v1/share/\(id)", method: "DELETE")
         request.setValue("Bearer \(deleteToken)", forHTTPHeaderField: "Authorization")
 
         let (_, response) = try await perform(request)
         switch response.statusCode {
         case 204, 404:
             return // deleted, or already gone
+        case 401, 403:
+            throw PublishError.unauthorized
         default:
             throw PublishError.server(status: response.statusCode)
         }
@@ -75,11 +104,8 @@ struct PublishService {
 
     // MARK: - Helpers
 
-    private func makeRequest(path: String, method: String) throws -> URLRequest {
-        guard let url = URL(string: baseURL + path) else {
-            throw PublishError.invalidResponse
-        }
-        var request = URLRequest(url: url, timeoutInterval: 15)
+    private func makeRequest(path: String, method: String) -> URLRequest {
+        var request = URLRequest(url: baseURL.appending(path: path), timeoutInterval: 15)
         request.httpMethod = method
         return request
     }
@@ -96,12 +122,16 @@ struct PublishService {
         } catch let error as URLError where error.code == .notConnectedToInternet
             || error.code == .networkConnectionLost
             || error.code == .cannotConnectToHost
+            || error.code == .cannotFindHost
+            || error.code == .dnsLookupFailed
             || error.code == .timedOut {
             throw PublishError.offline
+        } catch {
+            throw PublishError.invalidResponse
         }
     }
 
-    private static let decoder: JSONDecoder = {
+    nonisolated private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let string = try decoder.singleValueContainer().decode(String.self)
@@ -118,7 +148,7 @@ struct PublishService {
     /// Parse an ISO-8601 timestamp, with or without fractional seconds (the
     /// server emits milliseconds). Formatters are created locally because
     /// ISO8601DateFormatter is not Sendable.
-    private static func parseISO8601(_ string: String) -> Date? {
+    nonisolated private static func parseISO8601(_ string: String) -> Date? {
         let withFraction = ISO8601DateFormatter()
         withFraction.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = withFraction.date(from: string) { return date }
