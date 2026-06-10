@@ -8,6 +8,7 @@ final class RenderStore: ObservableObject {
     @Published private(set) var error: MermaidRenderError?
     @Published private(set) var info: MermaidRenderInfo?
     @Published private(set) var lastSVG: String?
+    @Published private(set) var successfulSignature: String?
 
     private weak var webView: WKWebView?
     private var isReady = false
@@ -31,7 +32,7 @@ final class RenderStore: ObservableObject {
     }
 
     func scheduleRender(code: String, theme: MermaidTheme) {
-        let signature = "\(theme.rawValue)\u{0}\(code)"
+        let signature = Self.signature(code: code, theme: theme)
         guard signature != lastSignature else { return }
         lastSignature = signature
         pendingCode = code
@@ -45,6 +46,7 @@ final class RenderStore: ObservableObject {
             error = nil
             info = nil
             lastSVG = nil
+            successfulSignature = nil
             clearCanvas()
             return
         }
@@ -64,6 +66,7 @@ final class RenderStore: ObservableObject {
         if message["success"] as? Bool == true {
             guard let svg = message["svg"] as? String else { return }
             lastSVG = svg
+            successfulSignature = Self.signature(code: pendingCode, theme: pendingTheme)
             error = nil
             info = MermaidRenderInfo(
                 diagramType: message["diagramType"] as? String ?? "diagram",
@@ -91,6 +94,13 @@ final class RenderStore: ObservableObject {
         evaluate("window.Meditor?.fit()")
     }
 
+    func canPublish(code: String, theme: MermaidTheme) -> Bool {
+        !isRendering
+            && error == nil
+            && lastSVG != nil
+            && successfulSignature == Self.signature(code: code, theme: theme)
+    }
+
     private func dispatchPendingRender() {
         guard isReady,
               !pendingCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
@@ -111,5 +121,9 @@ final class RenderStore: ObservableObject {
 
     private func evaluate(_ script: String) {
         webView?.evaluateJavaScript(script)
+    }
+
+    private static func signature(code: String, theme: MermaidTheme) -> String {
+        "\(theme.rawValue)\u{0}\(code)"
     }
 }
