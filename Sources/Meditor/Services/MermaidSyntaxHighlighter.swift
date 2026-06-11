@@ -15,14 +15,14 @@ enum MermaidSyntaxHighlighter {
         layoutManager.addTemporaryAttribute(.foregroundColor, value: NSColor.labelColor, forCharacterRange: stylingRange)
 
         apply(
-            pattern: #"(?m)^\s*(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram-v2|stateDiagram|erDiagram|gantt|mindmap|architecture-beta|journey|gitGraph|pie|timeline|quadrantChart|sankey-beta|xychart-beta)\b"#,
+            pattern: #"(?m)^\s*(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram-v2|stateDiagram|erDiagram|gantt|mindmap|architecture-beta|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment|journey|gitGraph|pie|timeline|quadrantChart|sankey-beta|xychart-beta)\b"#,
             color: .systemPurple,
             text: textView.string,
             range: stylingRange,
             layoutManager: layoutManager
         )
         apply(
-            pattern: #"(?m)\b(participant|actor|class|state|section|subgraph|end|title|dateFormat|direction|service|group)\b"#,
+            pattern: #"(?m)\b(participant|actor|class|state|section|subgraph|end|title|dateFormat|direction|service|group|Person|Person_Ext|System|System_Ext|SystemDb|SystemQueue|Boundary|Enterprise_Boundary|System_Boundary|Container|ContainerDb|ContainerQueue|Component|Rel|Rel_Back|Rel_Neighbor)\b"#,
             color: .systemBlue,
             text: textView.string,
             range: stylingRange,

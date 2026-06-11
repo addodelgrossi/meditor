@@ -36,7 +36,7 @@ flowchart LR
 - Finder Quick Look previews: select a Mermaid file and press Space
 - TextKit editor with syntax highlighting, line numbers, completion, and inline errors
 - Crisp offline preview with pan, zoom, themes, and last-valid-preview recovery
-- Templates for flowcharts, sequences, classes, states, ER, Gantt, mindmaps, and architecture
+- Templates for flowcharts, sequences, classes, states, ER, Gantt, mindmaps, architecture, and C4 context diagrams
 - Rich SVG, retina PNG, and PDF export with theme and background controls
 - Smart image clipboard with SVG, PDF, PNG, and TIFF representations
 - Full-screen presentations with temporary multi-file decks, slide navigation, and node highlighting

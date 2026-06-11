@@ -123,6 +123,22 @@ struct MermaidTemplate: Identifiable {
                 editor:R -- L:renderer
                 editor:B -- T:file
             """
+        ),
+        .init(
+            id: "c4-context",
+            title: "C4 Context",
+            subtitle: "Map people and systems",
+            systemImage: "person.2.crop.square.stack",
+            source: """
+            C4Context
+                title Meditor System Context
+                Person(user, "User", "Creates Mermaid diagrams")
+                System(meditor, "Meditor", "Edits and previews diagrams locally")
+                System_Ext(cloud, "Meditor Cloud", "Publishes view-only links")
+
+                Rel(user, meditor, "Creates diagrams")
+                Rel(meditor, cloud, "Publishes diagrams")
+            """
         )
     ]
 }

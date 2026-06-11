@@ -8,7 +8,7 @@ HIGHLIGHTS
 • Finder Quick Look previews: select a Mermaid file and press Space
 • Live offline preview with pan, zoom, themes, and last-valid-preview recovery
 • Syntax highlighting, line numbers, completion, and inline error navigation
-• Templates for flowcharts, sequences, classes, states, ER diagrams, Gantt charts, mindmaps, and architecture diagrams
+• Templates for flowcharts, sequences, classes, states, ER diagrams, Gantt charts, mindmaps, architecture, and C4 context diagrams
 • Rich SVG, retina PNG, and PDF export with theme and background controls
 • Smart image clipboard for Slack, Notion, Keynote, and other apps
 • Full-screen presentations with multi-file decks and clickable node highlights

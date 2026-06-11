@@ -140,8 +140,12 @@ struct MermaidTextEditor: NSViewRepresentable {
 final class MermaidNSTextView: NSTextView {
     private let mermaidCompletions = [
         "flowchart", "sequenceDiagram", "classDiagram", "stateDiagram-v2", "erDiagram",
-        "gantt", "mindmap", "architecture-beta", "subgraph", "participant", "actor",
-        "section", "direction", "title", "dateFormat", "classDef"
+        "gantt", "mindmap", "architecture-beta", "C4Context", "C4Container", "C4Component",
+        "C4Dynamic", "C4Deployment", "subgraph", "participant", "actor", "section",
+        "direction", "title", "dateFormat", "classDef", "Person", "Person_Ext", "System",
+        "System_Ext", "SystemDb", "SystemQueue", "Boundary", "Enterprise_Boundary",
+        "System_Boundary", "Container", "ContainerDb", "ContainerQueue", "Component",
+        "Rel", "Rel_Back", "Rel_Neighbor"
     ]
 
     override func completions(

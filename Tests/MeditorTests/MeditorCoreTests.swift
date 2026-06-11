@@ -24,7 +24,7 @@ final class MeditorCoreTests: XCTestCase {
 
     @MainActor
     func testEveryTemplateHasUniqueIdentifierAndSource() {
-        XCTAssertEqual(MermaidTemplate.all.count, 8)
+        XCTAssertEqual(MermaidTemplate.all.count, 9)
         XCTAssertEqual(Set(MermaidTemplate.all.map(\.id)).count, MermaidTemplate.all.count)
         XCTAssertTrue(MermaidTemplate.all.allSatisfy { !$0.source.isEmpty })
     }

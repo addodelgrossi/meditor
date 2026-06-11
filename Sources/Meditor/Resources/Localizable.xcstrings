@@ -11,6 +11,11 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arquitetura" } }
       }
     },
+    "C4 Context" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Contexto C4" } }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aparência" } }
@@ -174,6 +179,11 @@
     "Map a clear process" : {
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mapeie um processo com clareza" } }
+      }
+    },
+    "Map people and systems" : {
+      "localizations" : {
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mapeie pessoas e sistemas" } }
       }
     },
     "Mermaid source editor" : {
