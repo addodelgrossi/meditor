@@ -1,0 +1,74 @@
+name: Upload Tagged Build to App Store Connect
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-store-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Build, validate, and upload
+    runs-on: macos-26
+    environment: app-store-connect
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_PATH: ${{ runner.temp }}/app-store-connect-api-key.p8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26.5
+        run: sudo xcode-select --switch /Applications/Xcode_26.5.app/Contents/Developer
+
+      - name: Read version from tag
+        shell: bash
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tags must use the format v1.2.3: $GITHUB_REF_NAME" >&2
+            exit 2
+          fi
+
+          echo "MARKETING_VERSION=${GITHUB_REF_NAME#v}" >>"$GITHUB_ENV"
+          echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >>"$GITHUB_ENV"
+
+      - name: Configure App Store Connect API key
+        shell: bash
+        env:
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          for name in APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing GitHub secret: $name" >&2
+              exit 2
+            fi
+          done
+
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_P8" >"$APP_STORE_CONNECT_API_KEY_PATH"
+          chmod 600 "$APP_STORE_CONNECT_API_KEY_PATH"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run tests
+        run: swift test
+
+      - name: Create and verify archive
+        run: ./script/archive.sh
+
+      - name: Validate with App Store Connect
+        run: ./script/validate_app_store.sh
+
+      - name: Upload to App Store Connect
+        run: ./script/upload_testflight.sh --confirm-upload
+
+      - name: Remove App Store Connect API key
+        if: always()
+        run: rm -f "$APP_STORE_CONNECT_API_KEY_PATH"

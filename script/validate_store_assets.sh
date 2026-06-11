@@ -21,7 +21,7 @@ test -f docs/support/index.html
 test -f docs/assets/quick-look-preview.svg
 
 rg -q '^PRODUCT_BUNDLE_IDENTIFIER = com\.addodelgrossi\.meditor$' Configuration/Meditor.xcconfig
-rg -q '^MARKETING_VERSION = 1\.0\.0$' Configuration/Meditor.xcconfig
+rg -q '^MARKETING_VERSION = [0-9]+\.[0-9]+\.[0-9]+$' Configuration/Meditor.xcconfig
 rg -q '^CURRENT_PROJECT_VERSION = [1-9][0-9]*$' Configuration/Meditor.xcconfig
 rg -q '^DEVELOPMENT_TEAM = QHURUB34Z9$' Configuration/Meditor.xcconfig
 rg -q '<string>CA92\.1</string>' Sources/Meditor/Resources/PrivacyInfo.xcprivacy

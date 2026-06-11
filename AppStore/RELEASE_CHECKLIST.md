@@ -70,3 +70,12 @@ record for `com.addodelgrossi.meditor` does not exist yet. Once created, run:
 - [ ] Test the build with internal TestFlight
 - [ ] Attach screenshots, localized metadata, and the prepared review notes
 - [ ] Submit for App Review and release manually after approval
+
+## Automated uploads for later versions
+
+- [ ] Create the `app-store-connect` GitHub environment
+- [ ] Add `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`,
+  and `APP_STORE_CONNECT_API_KEY_P8` as environment secrets
+- [ ] Push a semantic-version tag such as `v1.0.1`
+- [ ] Confirm the workflow uploaded the new build to App Store Connect
+- [ ] Select the processed build, submit it for review, and release it manually

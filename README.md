@@ -104,6 +104,30 @@ team; App Store validation requires the same record. Increment
 `CURRENT_PROJECT_VERSION` in
 `Configuration/Meditor.xcconfig` before every upload.
 
+### Tagged App Store uploads
+
+Pushing a semantic-version tag such as `v1.0.1` runs
+`.github/workflows/app-store.yml`. The workflow tests the tagged commit,
+archives it with version `1.0.1`, validates it, and uploads a uniquely numbered
+build to App Store Connect. It does not submit the version for App Review or
+release it publicly.
+
+Configure an `app-store-connect` GitHub environment with these secrets:
+
+- `APP_STORE_CONNECT_API_KEY_ID`: App Store Connect API key ID
+- `APP_STORE_CONNECT_API_ISSUER_ID`: App Store Connect issuer ID
+- `APP_STORE_CONNECT_API_KEY_P8`: complete contents of the downloaded `.p8`
+  private key
+
+Create an Admin team API key in App Store Connect under **Users and Access >
+Integrations**, and keep the downloaded private key only in the GitHub
+environment secret. Then publish the next build with:
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
 Privacy and support pages live in `docs/` and deploy through GitHub Pages.
 App Store metadata and screenshot guidance live in `AppStore/`. Screenshot
 automation requires Screen & System Audio Recording permission for Codex or

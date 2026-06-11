@@ -3,13 +3,27 @@ import WebKit
 
 @MainActor
 final class SocialPreviewRenderer {
-    private let canvasSize = NSSize(width: 1200, height: 630)
+    // WebKit may still own autoreleased objects after a snapshot completes.
+    // Keep one engine alive instead of tearing down its window for every share.
+    private static let engine = SocialPreviewRenderEngine()
 
     func render(code: String, theme: MermaidTheme) async throws -> Data {
-        guard let rendererURL = RendererResources.htmlURL else {
-            throw PublishError.invalidResponse
-        }
+        try await Self.engine.render(code: code, theme: theme)
+    }
+}
 
+@MainActor
+private final class SocialPreviewRenderEngine {
+    private let canvasSize = NSSize(width: 1200, height: 630)
+    private let inbox: SocialPreviewMessageInbox
+    private let webView: WKWebView
+    private let window: NSWindow
+    private var isReady = false
+    private var requestID = 0
+    private var isRendering = false
+    private var renderWaiters: [CheckedContinuation<Void, Never>] = []
+
+    init() {
         let inbox = SocialPreviewMessageInbox()
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
@@ -27,20 +41,32 @@ final class SocialPreviewRenderer {
             defer: false
         )
         window.isReleasedWhenClosed = false
+        window.collectionBehavior = [.transient, .ignoresCycle]
+        window.ignoresMouseEvents = true
         window.contentView = webView
         window.setFrameOrigin(NSPoint(x: -20_000, y: -20_000))
-        window.orderFront(nil)
-        defer { window.orderOut(nil) }
 
         webView.setValue(false, forKey: "drawsBackground")
-        webView.loadFileURL(rendererURL, allowingReadAccessTo: rendererURL.deletingLastPathComponent())
 
-        guard try await inbox.nextEvent() == .ready else {
-            throw PublishError.invalidResponse
+        self.inbox = inbox
+        self.webView = webView
+        self.window = window
+    }
+
+    func render(code: String, theme: MermaidTheme) async throws -> Data {
+        await acquireRenderSlot()
+        defer {
+            window.orderOut(nil)
+            releaseRenderSlot()
         }
 
+        window.orderFront(nil)
+        try await prepareIfNeeded()
+        requestID += 1
+        let currentRequestID = requestID
+
         let payload: [String: Any] = [
-            "id": 1,
+            "id": currentRequestID,
             "code": code,
             "theme": theme.mermaidValue,
             "interactive": false,
@@ -51,7 +77,7 @@ final class SocialPreviewRenderer {
         }
         try await evaluate("window.Meditor.render(\(json)); true", in: webView)
 
-        switch try await inbox.nextEvent() {
+        switch try await inbox.nextEvent(for: currentRequestID) {
         case .rendered:
             break
         case .ready:
@@ -76,12 +102,41 @@ final class SocialPreviewRenderer {
         try await Task.sleep(for: .milliseconds(80))
 
         let image = try await snapshot(webView)
-        withExtendedLifetime(window) {}
         let png = try normalizedPNG(from: image)
         guard png.count <= ShareLimits.maximumOGImageBytes else {
             throw PublishError.payloadTooLarge
         }
         return png
+    }
+
+    private func prepareIfNeeded() async throws {
+        guard !isReady else { return }
+        guard let rendererURL = RendererResources.htmlURL else {
+            throw PublishError.invalidResponse
+        }
+        webView.loadFileURL(rendererURL, allowingReadAccessTo: rendererURL.deletingLastPathComponent())
+        guard try await inbox.nextEvent(for: nil) == .ready else {
+            throw PublishError.invalidResponse
+        }
+        isReady = true
+    }
+
+    private func acquireRenderSlot() async {
+        guard isRendering else {
+            isRendering = true
+            return
+        }
+        await withCheckedContinuation { continuation in
+            renderWaiters.append(continuation)
+        }
+    }
+
+    private func releaseRenderSlot() {
+        guard !renderWaiters.isEmpty else {
+            isRendering = false
+            return
+        }
+        renderWaiters.removeFirst().resume()
     }
 
     private func evaluate(_ script: String, in webView: WKWebView) async throws {
@@ -134,8 +189,8 @@ final class SocialPreviewRenderer {
 private final class SocialPreviewMessageInbox: NSObject, WKScriptMessageHandler {
     enum Event: Equatable {
         case ready
-        case rendered
-        case failed
+        case rendered(Int)
+        case failed(Int)
     }
 
     private var queued: [Event] = []
@@ -150,10 +205,12 @@ private final class SocialPreviewMessageInbox: NSObject, WKScriptMessageHandler 
         let event: Event
         if payload["event"] as? String == "ready" {
             event = .ready
-        } else if payload["success"] as? Bool == true {
-            event = .rendered
+        } else if let id = payload["id"] as? Int, payload["success"] as? Bool == true {
+            event = .rendered(id)
+        } else if let id = payload["id"] as? Int {
+            event = .failed(id)
         } else {
-            event = .failed
+            return
         }
 
         if let continuation {
@@ -163,7 +220,23 @@ private final class SocialPreviewMessageInbox: NSObject, WKScriptMessageHandler 
         }
     }
 
-    func nextEvent() async throws -> Event {
+    func nextEvent(for requestID: Int?) async throws -> Event {
+        while true {
+            let event = try await nextEvent()
+            switch (requestID, event) {
+            case (nil, .ready):
+                return event
+            case let (id?, .rendered(eventID)) where id == eventID:
+                return event
+            case let (id?, .failed(eventID)) where id == eventID:
+                return event
+            default:
+                continue
+            }
+        }
+    }
+
+    private func nextEvent() async throws -> Event {
         if !queued.isEmpty {
             return queued.removeFirst()
         }

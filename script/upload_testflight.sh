@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ARCHIVE_PATH="${ARCHIVE_PATH:-$ROOT_DIR/dist/Meditor.xcarchive}"
 EXPORT_PATH="${EXPORT_PATH:-$ROOT_DIR/dist/AppStoreUpload}"
+source "$ROOT_DIR/script/app_store_connect_auth.sh"
 
 if [[ "${1:-}" != "--confirm-upload" ]]; then
   echo "This uploads the archive to App Store Connect." >&2
@@ -19,4 +20,4 @@ xcodebuild \
   -archivePath "$ARCHIVE_PATH" \
   -exportPath "$EXPORT_PATH" \
   -exportOptionsPlist "$ROOT_DIR/Configuration/ExportOptions.plist" \
-  -allowProvisioningUpdates
+  "${XCODE_AUTH_ARGS[@]}"

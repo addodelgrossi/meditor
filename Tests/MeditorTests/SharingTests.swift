@@ -203,17 +203,35 @@ final class SharingTests: XCTestCase {
         XCTAssertEqual(imageError, .payloadTooLarge)
     }
 
-    func testSocialPreviewRendererCreatesFixedOpaquePNGWithinLimit() async throws {
-        let data = try await SocialPreviewRenderer().render(code: sampleCode, theme: .forest)
-        let bitmap = try XCTUnwrap(NSBitmapImageRep(data: data))
-        XCTAssertEqual(bitmap.pixelsWide, 1200)
-        XCTAssertEqual(bitmap.pixelsHigh, 630)
-        XCTAssertLessThanOrEqual(data.count, ShareLimits.maximumOGImageBytes)
-        let corner = try XCTUnwrap(bitmap.colorAt(x: 0, y: 0)?.usingColorSpace(.deviceRGB))
-        XCTAssertEqual(corner.alphaComponent, 1)
-        XCTAssertEqual(corner.redComponent, 1, accuracy: 0.01)
-        XCTAssertEqual(corner.greenComponent, 1, accuracy: 0.01)
-        XCTAssertEqual(corner.blueComponent, 1, accuracy: 0.01)
+    func testSocialPreviewRendererCreatesRepeatedFixedOpaquePNGsWithinLimit() async throws {
+        let renderer = SocialPreviewRenderer()
+        for theme in [MermaidTheme.forest, .dark, .default] {
+            let data = try await renderer.render(code: sampleCode, theme: theme)
+            let bitmap = try XCTUnwrap(NSBitmapImageRep(data: data))
+            XCTAssertEqual(bitmap.pixelsWide, 1200)
+            XCTAssertEqual(bitmap.pixelsHigh, 630)
+            XCTAssertLessThanOrEqual(data.count, ShareLimits.maximumOGImageBytes)
+            let corner = try XCTUnwrap(bitmap.colorAt(x: 0, y: 0)?.usingColorSpace(.deviceRGB))
+            XCTAssertEqual(corner.alphaComponent, 1)
+            XCTAssertEqual(corner.redComponent, 1, accuracy: 0.01)
+            XCTAssertEqual(corner.greenComponent, 1, accuracy: 0.01)
+            XCTAssertEqual(corner.blueComponent, 1, accuracy: 0.01)
+        }
+    }
+
+    func testSocialPreviewRendererSerializesConcurrentRequests() async throws {
+        let renderer = SocialPreviewRenderer()
+        let flowchart = sampleCode
+        async let first = renderer.render(code: flowchart, theme: .forest)
+        async let second = renderer.render(code: "sequenceDiagram\nA->>B: Hello", theme: .dark)
+        async let third = renderer.render(code: "classDiagram\nA <|-- B", theme: .default)
+
+        for data in try await [first, second, third] {
+            let bitmap = try XCTUnwrap(NSBitmapImageRep(data: data))
+            XCTAssertEqual(bitmap.pixelsWide, 1200)
+            XCTAssertEqual(bitmap.pixelsHigh, 630)
+            XCTAssertLessThanOrEqual(data.count, ShareLimits.maximumOGImageBytes)
+        }
     }
 
     func testRenderStoreOnlyPublishesCurrentSuccessfulRender() {

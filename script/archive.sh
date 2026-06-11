@@ -3,7 +3,21 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ARCHIVE_PATH="${ARCHIVE_PATH:-$ROOT_DIR/dist/Meditor.xcarchive}"
-BUILD_NUMBER="${BUILD_NUMBER:-1}"
+MARKETING_VERSION="${MARKETING_VERSION:-$(awk -F ' = ' '$1 == "MARKETING_VERSION" { print $2 }' "$ROOT_DIR/Configuration/Meditor.xcconfig")}"
+BUILD_NUMBER="${BUILD_NUMBER:-$(awk -F ' = ' '$1 == "CURRENT_PROJECT_VERSION" { print $2 }' "$ROOT_DIR/Configuration/Meditor.xcconfig")}"
+
+if [[ ! "$MARKETING_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "MARKETING_VERSION must use the format 1.2.3: $MARKETING_VERSION" >&2
+  exit 2
+fi
+
+if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+  echo "BUILD_NUMBER must be a positive integer: $BUILD_NUMBER" >&2
+  exit 2
+fi
+
+export MARKETING_VERSION BUILD_NUMBER
+source "$ROOT_DIR/script/app_store_connect_auth.sh"
 
 "$ROOT_DIR/script/generate_project.sh"
 "$ROOT_DIR/script/validate_store_assets.sh"
@@ -16,7 +30,8 @@ xcodebuild \
   -configuration Release \
   -destination "generic/platform=macOS" \
   -archivePath "$ARCHIVE_PATH" \
-  -allowProvisioningUpdates \
+  "${XCODE_AUTH_ARGS[@]}" \
+  MARKETING_VERSION="$MARKETING_VERSION" \
   CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
   clean archive
 
