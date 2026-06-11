@@ -18,6 +18,64 @@ final class MermaidRendererIntegrationTests: XCTestCase {
             let message = await inbox.nextMessage()
             XCTAssertEqual(message["success"] as? Bool, true, "\(template.id): \(message)")
             XCTAssertNotNil(message["svg"] as? String)
+            let analysis = DiagramRenderService.decodeAnalysis(message["analysis"])
+            XCTAssertNotNil(analysis, "\(template.id) should return normalized analysis")
+
+            if ["gantt", "c4-context"].contains(template.id) {
+                XCTAssertNil(analysis?.elementCount, "\(template.id) should not invent element metrics")
+                XCTAssertNil(analysis?.connectionCount, "\(template.id) should not invent connection metrics")
+            } else {
+                XCTAssertGreaterThan(analysis?.elementCount ?? 0, 0, "\(template.id) should expose elements")
+                XCTAssertGreaterThanOrEqual(
+                    analysis?.allOutlineItems.count ?? 0,
+                    analysis?.elementCount ?? 0,
+                    "\(template.id) should expose every analyzed element in the outline"
+                )
+            }
+        }
+    }
+
+    func testFlowchartAndSequenceAnalysisExposeStableCounts() async throws {
+        let (webView, inbox) = try makeRenderer()
+        _ = await inbox.nextMessage()
+
+        try render(MermaidTemplate.all[0].source, id: 1, in: webView)
+        let flowchart = DiagramRenderService.decodeAnalysis((await inbox.nextMessage())["analysis"])
+        XCTAssertEqual(flowchart?.elementCount, 4)
+        XCTAssertEqual(flowchart?.connectionCount, 4)
+        XCTAssertTrue(
+            flowchart.map { DiagramSourceTools.enrich($0, source: MermaidTemplate.all[0].source).issues.isEmpty } == true
+        )
+
+        try render(MermaidTemplate.all[1].source, id: 2, in: webView)
+        let sequence = DiagramRenderService.decodeAnalysis((await inbox.nextMessage())["analysis"])
+        XCTAssertEqual(sequence?.elementCount, 2)
+        XCTAssertEqual(sequence?.connectionCount, 2)
+        XCTAssertTrue(
+            sequence.map { DiagramSourceTools.enrich($0, source: MermaidTemplate.all[1].source).issues.isEmpty } == true
+        )
+    }
+
+    func testOffscreenRendererRendersEveryThemeSequentially() async throws {
+        for theme in MermaidTheme.allCases {
+            let result = try await DiagramRenderService.shared.render(
+                code: "flowchart LR\nA --> B",
+                theme: theme
+            )
+            XCTAssertTrue(result.svg.contains("<svg"), theme.rawValue)
+            XCTAssertEqual(result.analysis?.elementCount, 2, theme.rawValue)
+        }
+    }
+
+    func testOffscreenRendererRejectsInvalidRenameCandidate() async {
+        do {
+            _ = try await DiagramRenderService.shared.render(
+                code: "flowchart LR\nA -->",
+                theme: .default
+            )
+            XCTFail("Invalid candidate should not be accepted")
+        } catch {
+            XCTAssertFalse(error.localizedDescription.isEmpty)
         }
     }
 

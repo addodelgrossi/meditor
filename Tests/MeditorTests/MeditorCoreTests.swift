@@ -38,6 +38,276 @@ final class MeditorCoreTests: XCTestCase {
     }
 
     @MainActor
+    func testEditorEnablesNativeFindBarAndIncrementalSearch() {
+        let textView = NSTextView()
+
+        MermaidTextEditor.configureFind(in: textView)
+
+        XCTAssertTrue(textView.usesFindBar)
+        XCTAssertTrue(textView.isIncrementalSearchingEnabled)
+    }
+
+    @MainActor
+    func testEditorCommandAppliesAsOneUndoOperation() {
+        let textView = NSTextView()
+        let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 300, height: 200), styleMask: [], backing: .buffered, defer: false)
+        window.contentView = textView
+        textView.allowsUndo = true
+        textView.string = "flowchart LR\nA --> B"
+
+        MermaidTextEditor.apply(
+            MermaidEditorCommand(
+                replacementText: "flowchart LR\nStart --> B",
+                actionName: "Rename Diagram Identifier"
+            ),
+            to: textView
+        )
+        textView.undoManager?.undo()
+
+        XCTAssertEqual(textView.string, "flowchart LR\nA --> B")
+    }
+
+    func testMarkdownBlockUsesFenceLongerThanSourceBackticks() {
+        let source = "flowchart LR\nA[```code```] --> B"
+        let block = DiagramSourceTools.markdownBlock(for: source)
+
+        XCTAssertTrue(block.hasPrefix("````mermaid\n"))
+        XCTAssertTrue(block.hasSuffix("\n````"))
+        XCTAssertTrue(block.contains(source))
+    }
+
+    func testAnalysisCodableRoundTrip() throws {
+        let analysis = DiagramAnalysis(
+            diagramType: "flowchart-v2",
+            elementCount: 2,
+            connectionCount: 1,
+            outline: [
+                DiagramOutlineItem(
+                    id: "node:A",
+                    identifier: "A",
+                    title: "Alpha",
+                    kind: .node,
+                    children: [],
+                    line: 2
+                )
+            ],
+            connections: [
+                DiagramConnection(id: "edge:0", from: "A", to: "B", label: nil)
+            ],
+            issues: []
+        )
+
+        let decoded = try JSONDecoder().decode(
+            DiagramAnalysis.self,
+            from: JSONEncoder().encode(analysis)
+        )
+
+        XCTAssertEqual(decoded, analysis)
+    }
+
+    func testFlowchartAnalysisFindsDeclarationsAndWarningsWithoutCountingReferences() {
+        let source = """
+        flowchart LR
+          A[First] --> B[Second]
+          A --> B
+          A[Duplicate]
+          C[Alone]
+        """
+        let analysis = DiagramSourceTools.enrich(
+            DiagramAnalysis(
+                diagramType: "flowchart-v2",
+                elementCount: 3,
+                connectionCount: 2,
+                outline: [
+                    outlineItem("A", kind: .node),
+                    outlineItem("B", kind: .node),
+                    outlineItem("C", kind: .node),
+                ],
+                connections: [
+                    DiagramConnection(id: "1", from: "A", to: "B", label: nil),
+                    DiagramConnection(id: "2", from: "A", to: "B", label: nil),
+                ],
+                issues: []
+            ),
+            source: source
+        )
+
+        XCTAssertNil(analysis.item(id: "node:A")?.line)
+        XCTAssertEqual(analysis.item(id: "node:B")?.line, 2)
+        XCTAssertEqual(analysis.item(id: "node:C")?.line, 5)
+        XCTAssertEqual(analysis.issues.filter { $0.kind == .duplicateIdentifier }.map(\.id), ["duplicate:A"])
+        XCTAssertEqual(analysis.issues.filter { $0.kind == .disconnectedElement }.map(\.id), ["disconnected:C"])
+    }
+
+    func testSequenceWarningsIgnoreRepeatedMessageReferences() {
+        let source = """
+        sequenceDiagram
+          participant A
+          participant B
+          participant C
+          A->>B: A asks B
+          B-->>A: B answers A
+        """
+        let analysis = DiagramSourceTools.enrich(
+            DiagramAnalysis(
+                diagramType: "sequence",
+                elementCount: 3,
+                connectionCount: 2,
+                outline: [
+                    outlineItem("A", kind: .participant),
+                    outlineItem("B", kind: .participant),
+                    outlineItem("C", kind: .participant),
+                ],
+                connections: [
+                    DiagramConnection(id: "1", from: "A", to: "B", label: "A asks B"),
+                    DiagramConnection(id: "2", from: "B", to: "A", label: "B answers A"),
+                ],
+                issues: []
+            ),
+            source: source
+        )
+
+        XCTAssertTrue(analysis.issues.filter { $0.kind == .duplicateIdentifier }.isEmpty)
+        XCTAssertEqual(analysis.issues.filter { $0.kind == .disconnectedElement }.map(\.id), ["disconnected:C"])
+    }
+
+    func testSequenceCreateParticipantIsNavigableDeclaration() {
+        let source = """
+        sequenceDiagram
+          participant A
+          create participant B
+          A->>B: Start
+        """
+        let analysis = DiagramSourceTools.enrich(
+            DiagramAnalysis(
+                diagramType: "sequence",
+                elementCount: 2,
+                connectionCount: 1,
+                outline: [
+                    outlineItem("A", kind: .participant),
+                    outlineItem("B", kind: .participant),
+                ],
+                connections: [
+                    DiagramConnection(id: "1", from: "A", to: "B", label: "Start")
+                ],
+                issues: []
+            ),
+            source: source
+        )
+
+        XCTAssertEqual(analysis.item(id: "participant:B")?.line, 3)
+    }
+
+    func testRenamePreservesLabelsCommentsAndSequenceMessageText() throws {
+        let flowchart = """
+        flowchart LR
+          A[Label A] --> B
+          %% A remains in a comment
+          B --> A
+        """
+        let flowPlan = try DiagramSourceTools.renamePlan(
+            source: flowchart,
+            diagramType: "flowchart-v2",
+            item: outlineItem("A", kind: .node),
+            newIdentifier: "Start"
+        )
+        XCTAssertTrue(flowPlan.source.contains("Start[Label A] --> B"))
+        XCTAssertTrue(flowPlan.source.contains("B --> Start"))
+        XCTAssertTrue(flowPlan.source.contains("%% A remains in a comment"))
+        XCTAssertEqual(flowPlan.replacementCount, 2)
+
+        let sequence = """
+        sequenceDiagram
+          participant A as Alice
+          participant B
+          A->>B: A stays in message text
+        """
+        let sequencePlan = try DiagramSourceTools.renamePlan(
+            source: sequence,
+            diagramType: "sequence",
+            item: outlineItem("A", kind: .participant),
+            newIdentifier: "Client"
+        )
+        XCTAssertTrue(sequencePlan.source.contains("participant Client as Alice"))
+        XCTAssertTrue(sequencePlan.source.contains("Client->>B: A stays in message text"))
+        XCTAssertEqual(sequencePlan.replacementCount, 2)
+    }
+
+    func testRenameRejectsExistingIdentifier() {
+        XCTAssertThrowsError(
+            try DiagramSourceTools.renamePlan(
+                source: "flowchart LR\nA --> B",
+                diagramType: "flowchart-v2",
+                item: outlineItem("A", kind: .node),
+                newIdentifier: "B"
+            )
+        ) { error in
+            XCTAssertEqual(error as? DiagramSourceTools.RenameError, .identifierAlreadyExists)
+        }
+    }
+
+    func testHyphenatedIdentifiersAreNotConfusedWithArrowEndpoints() throws {
+        let source = "flowchart LR\nA-B[Compound] --> B[Simple]"
+        let analysis = DiagramSourceTools.enrich(
+            DiagramAnalysis(
+                diagramType: "flowchart-v2",
+                elementCount: 2,
+                connectionCount: 1,
+                outline: [
+                    outlineItem("A-B", kind: .node),
+                    outlineItem("B", kind: .node),
+                ],
+                connections: [
+                    DiagramConnection(id: "1", from: "A-B", to: "B", label: nil)
+                ],
+                issues: []
+            ),
+            source: source
+        )
+
+        XCTAssertEqual(analysis.item(id: "node:B")?.line, 2)
+        XCTAssertTrue(analysis.issues.filter { $0.kind == .duplicateIdentifier }.isEmpty)
+
+        let plan = try DiagramSourceTools.renamePlan(
+            source: source,
+            diagramType: "flowchart-v2",
+            item: outlineItem("B", kind: .node),
+            newIdentifier: "End"
+        )
+        XCTAssertEqual(plan.source, "flowchart LR\nA-B[Compound] --> End[Simple]")
+        XCTAssertEqual(plan.replacementCount, 1)
+    }
+
+    @MainActor
+    func testBatchExportCreatesAndReplacesFiveThemeFiles() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let destinations = ExportService.batchURLs(
+            directory: directory,
+            suggestedName: "Diagram/Test",
+            format: .svg
+        )
+        XCTAssertEqual(destinations.count, 5)
+        XCTAssertEqual(
+            destinations.map(\.url.lastPathComponent),
+            ["Diagram-Test-default.svg", "Diagram-Test-neutral.svg", "Diagram-Test-dark.svg", "Diagram-Test-forest.svg", "Diagram-Test-base.svg"]
+        )
+
+        try ExportService.writeBatch(destinations.map { ($0.url, Data($0.theme.rawValue.utf8)) })
+        try ExportService.writeBatch(destinations.map { ($0.url, Data("updated-\($0.theme.rawValue)".utf8)) })
+
+        for destination in destinations {
+            XCTAssertEqual(
+                try String(contentsOf: destination.url, encoding: .utf8),
+                "updated-\(destination.theme.rawValue)"
+            )
+        }
+    }
+
+    @MainActor
     func testExportCreatesSVGPNGAndPDF() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80">
@@ -182,6 +452,33 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertNil(store.error)
     }
 
+    @MainActor
+    func testRenderStoreClearsAnalysisAsSoonAsSourceChanges() {
+        let store = RenderStore()
+        store.scheduleRender(code: "flowchart LR\nA-->B", theme: .default)
+        store.handle(message: [
+            "id": 1,
+            "success": true,
+            "svg": "<svg/>",
+            "diagramType": "flowchart-v2",
+            "width": 100.0,
+            "height": 50.0,
+            "analysis": [
+                "diagramType": "flowchart-v2",
+                "elementCount": 2,
+                "connectionCount": 1,
+                "outline": [],
+                "connections": [],
+                "issues": [],
+            ],
+        ])
+        XCTAssertNotNil(store.analysis)
+
+        store.scheduleRender(code: "flowchart LR\nA-->", theme: .default)
+
+        XCTAssertNil(store.analysis)
+    }
+
     func testRendererResourcesAreBundledAndOffline() throws {
         let htmlURL = try XCTUnwrap(RendererResources.htmlURL)
         let scriptURL = try XCTUnwrap(RendererResources.mermaidJavaScriptURL)
@@ -200,5 +497,16 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertNotNil(privacy)
         XCTAssertTrue(LegalResources.licenseText.contains("Copyright (c) 2026 Addo Del Grossi"))
         XCTAssertTrue(LegalResources.licenseText.contains("MIT License"))
+    }
+
+    private func outlineItem(_ identifier: String, kind: DiagramOutlineKind) -> DiagramOutlineItem {
+        DiagramOutlineItem(
+            id: "\(kind.rawValue):\(identifier)",
+            identifier: identifier,
+            title: identifier,
+            kind: kind,
+            children: [],
+            line: nil
+        )
     }
 }

@@ -9,8 +9,11 @@
 /* Begin PBXBuildFile section */
 		0861310AFC8643E6FD8FFB1B /* SocialPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274556B6A5DD3D9195C6D45D /* SocialPreviewRenderer.swift */; };
 		0D4316A3E6CBEB18BFBB65DB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 483DB55329DA8A38F9C2128A /* PrivacyInfo.xcprivacy */; };
+		1F9A4E6657967C7DB72BAF22 /* RenameDiagramSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8576C5D88F772E6D28394A64 /* RenameDiagramSheet.swift */; };
 		2519E9E7DF4881CE53CF49B8 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4F6B393337D1A978AD3BFC /* AppInfo.swift */; };
+		2728EFBCB9EC715ED794F241 /* MermaidEditorCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4593474924809DC721BE2BF9 /* MermaidEditorCommand.swift */; };
 		2F38C58DEF57DB8EE215D9BA /* renderer.html in Resources */ = {isa = PBXBuildFile; fileRef = 9AE1386018B8FBBC05A1BA60 /* renderer.html */; };
+		2F7E022A1EBA500A3EAA4D32 /* DiagramRenderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492FF63772D10B1DAAFEAF4C /* DiagramRenderService.swift */; };
 		36D8BFC13FF127A1F1C3940F /* RendererResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE009D927C860B1F1CCDE75 /* RendererResources.swift */; };
 		3AFED74605FCF74CB6E87467 /* EditorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69978087F54CA79621774AD /* EditorModels.swift */; };
 		428945F72033BC8CB4275E5F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B95185A3C33A5B3E65721B /* Brand.swift */; };
@@ -27,8 +30,10 @@
 		6C0BFCEA9EB106F9BE07ACA2 /* PublishPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC3798F609799DB67399134 /* PublishPopover.swift */; };
 		743B82264A0E1A2376FB25EC /* MermaidPreviewWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD39C3884504CA517F726A /* MermaidPreviewWebView.swift */; };
 		7506F641B4DE8E15F3EE82CB /* mermaid.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 204EA30E279448CEC8624D8C /* mermaid.min.js */; };
+		752DBBDADF9708954FEB9FDA /* DiagramInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293FC67E9AD66E1CCCB81A4F /* DiagramInspectorView.swift */; };
 		75EE4A718D3A4AFE52A32C1D /* LICENSE-mermaid.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7F59D27AF72C606C2DAF7561 /* LICENSE-mermaid.txt */; };
 		779556B94172EF35CF46C4FF /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = EAF5B5E93456577570E0ECD2 /* Localizable.xcstrings */; };
+		7FABECB9BC30F5ADBBD3EFD4 /* DiagramAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F253699765E58ABA0532C0 /* DiagramAnalysis.swift */; };
 		8878F1C3506984629F06822C /* MermaidTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0568D3D49ADD2883B2AB22A8 /* MermaidTemplate.swift */; };
 		8993E1BE4C309C80DF8A17E2 /* LICENSE-Meditor.txt in Resources */ = {isa = PBXBuildFile; fileRef = E03154BD61C08FE083DEB386 /* LICENSE-Meditor.txt */; };
 		8AAD285D4DD3F1022B28E9E4 /* mermaid.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 204EA30E279448CEC8624D8C /* mermaid.min.js */; };
@@ -41,6 +46,7 @@
 		A9CADD73D5EA28E98C2CF710 /* ShareServiceURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678B29601EBA5FFE01157084 /* ShareServiceURL.swift */; };
 		AF6235415B22B951CA9479AE /* MermaidSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533B046C7C9A4EC7B5436F7B /* MermaidSyntaxHighlighter.swift */; };
 		B167DEB211D6AA75BAA01FF0 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6DACB472D708DC7D9BE3BE /* PreviewViewController.swift */; };
+		B73C7C425186C41E63F088CA /* DiagramSourceTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E108CA2C20C2A7CF49FF86D /* DiagramSourceTools.swift */; };
 		C97D22D25A43C4451524DC0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C770D4C78F981BFFC0B5B1D4 /* Assets.xcassets */; };
 		CF638505171FB497071B4E10 /* MeditorQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 77CC134B302F30A5BD60B440 /* MeditorQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CF6E2CC5DBFABF45B4C48A03 /* MermaidTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9493CC5853384A166A4611 /* MermaidTextEditor.swift */; };
@@ -105,10 +111,13 @@
 		1600FA902AF7A4296A40FD79 /* MeditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		204EA30E279448CEC8624D8C /* mermaid.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mermaid.min.js; sourceTree = "<group>"; };
 		274556B6A5DD3D9195C6D45D /* SocialPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialPreviewRenderer.swift; sourceTree = "<group>"; };
+		293FC67E9AD66E1CCCB81A4F /* DiagramInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagramInspectorView.swift; sourceTree = "<group>"; };
 		3610A3558B38500125AF3DB0 /* PresentationDeckBuilderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationDeckBuilderView.swift; sourceTree = "<group>"; };
 		42E172672CBE850561C0CC4D /* PresentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationView.swift; sourceTree = "<group>"; };
 		4385793E1264D9241E34439B /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
+		4593474924809DC721BE2BF9 /* MermaidEditorCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidEditorCommand.swift; sourceTree = "<group>"; };
 		483DB55329DA8A38F9C2128A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		492FF63772D10B1DAAFEAF4C /* DiagramRenderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagramRenderService.swift; sourceTree = "<group>"; };
 		5274C6FCEF48F95C4F2816C1 /* PublishViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishViewModel.swift; sourceTree = "<group>"; };
 		533B046C7C9A4EC7B5436F7B /* MermaidSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		678B29601EBA5FFE01157084 /* ShareServiceURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareServiceURL.swift; sourceTree = "<group>"; };
@@ -117,15 +126,18 @@
 		792DC3B6AE8296193E09F408 /* DocumentWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentWorkspace.swift; sourceTree = "<group>"; };
 		7B133F5B5921A92D3091212E /* Meditor.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Meditor.xcconfig; sourceTree = "<group>"; };
 		7BA5E9E55C91A6A4D3C0D44B /* MeditorQuickLookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeditorQuickLookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E108CA2C20C2A7CF49FF86D /* DiagramSourceTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagramSourceTools.swift; sourceTree = "<group>"; };
 		7F59D27AF72C606C2DAF7561 /* LICENSE-mermaid.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-mermaid.txt"; sourceTree = "<group>"; };
 		83EB94E6C57A84F8C5293A84 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8454D164B5F912C4399A33F3 /* PublishedLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishedLinksView.swift; sourceTree = "<group>"; };
+		8576C5D88F772E6D28394A64 /* RenameDiagramSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameDiagramSheet.swift; sourceTree = "<group>"; };
 		9028D69C9D222F1B13CBFA3F /* ShareClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareClient.swift; sourceTree = "<group>"; };
 		93066CB3A35BE123D83F6354 /* PresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationModels.swift; sourceTree = "<group>"; };
 		98CE57EFC4A544EC8C2DE291 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9AE1386018B8FBBC05A1BA60 /* renderer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = renderer.html; sourceTree = "<group>"; };
 		9B28A19E7CC71C21D00B31C5 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		9D166929FB856A10726B864E /* RenderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderStore.swift; sourceTree = "<group>"; };
+		A0F253699765E58ABA0532C0 /* DiagramAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagramAnalysis.swift; sourceTree = "<group>"; };
 		A1602AAC0226DF3A215B1EAD /* CanvasBackdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasBackdrop.swift; sourceTree = "<group>"; };
 		A807777716B71251553FC92A /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		B86F155A1A4AF1EFA46CA7A5 /* ExportPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPanel.swift; sourceTree = "<group>"; };
@@ -175,6 +187,7 @@
 			isa = PBXGroup;
 			children = (
 				A1602AAC0226DF3A215B1EAD /* CanvasBackdrop.swift */,
+				293FC67E9AD66E1CCCB81A4F /* DiagramInspectorView.swift */,
 				792DC3B6AE8296193E09F408 /* DocumentWorkspace.swift */,
 				B86F155A1A4AF1EFA46CA7A5 /* ExportPanel.swift */,
 				036A2A30AFA872AA5B67AA80 /* LicensesView.swift */,
@@ -184,6 +197,7 @@
 				8454D164B5F912C4399A33F3 /* PublishedLinksView.swift */,
 				0CC3798F609799DB67399134 /* PublishPopover.swift */,
 				5274C6FCEF48F95C4F2816C1 /* PublishViewModel.swift */,
+				8576C5D88F772E6D28394A64 /* RenameDiagramSheet.swift */,
 				715BBAF43F805DE6507EC075 /* RenderErrorBanner.swift */,
 				98CE57EFC4A544EC8C2DE291 /* SettingsView.swift */,
 				CCC21C4E861CA17098C1F767 /* TemplateGallery.swift */,
@@ -194,8 +208,10 @@
 		408DDE4F1A60195DE21CB498 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A0F253699765E58ABA0532C0 /* DiagramAnalysis.swift */,
 				D69978087F54CA79621774AD /* EditorModels.swift */,
 				D255A42E46E27101E4E67EF2 /* MermaidDocument.swift */,
+				4593474924809DC721BE2BF9 /* MermaidEditorCommand.swift */,
 				0568D3D49ADD2883B2AB22A8 /* MermaidTemplate.swift */,
 				93066CB3A35BE123D83F6354 /* PresentationModels.swift */,
 				678B29601EBA5FFE01157084 /* ShareServiceURL.swift */,
@@ -312,6 +328,8 @@
 		E238D525F30A1758056D1D8D /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				492FF63772D10B1DAAFEAF4C /* DiagramRenderService.swift */,
+				7E108CA2C20C2A7CF49FF86D /* DiagramSourceTools.swift */,
 				4385793E1264D9241E34439B /* ExportService.swift */,
 				B9DD39C3884504CA517F726A /* MermaidPreviewWebView.swift */,
 				533B046C7C9A4EC7B5436F7B /* MermaidSyntaxHighlighter.swift */,
@@ -501,6 +519,10 @@
 				F1367C8A84188191EA280E43 /* AppPreferences.swift in Sources */,
 				428945F72033BC8CB4275E5F /* Brand.swift in Sources */,
 				44A4CA57FD6BA8CE742ABAE6 /* CanvasBackdrop.swift in Sources */,
+				7FABECB9BC30F5ADBBD3EFD4 /* DiagramAnalysis.swift in Sources */,
+				752DBBDADF9708954FEB9FDA /* DiagramInspectorView.swift in Sources */,
+				2F7E022A1EBA500A3EAA4D32 /* DiagramRenderService.swift in Sources */,
+				B73C7C425186C41E63F088CA /* DiagramSourceTools.swift in Sources */,
 				A122958D66A91B6AD12F2E0F /* DocumentWorkspace.swift in Sources */,
 				3AFED74605FCF74CB6E87467 /* EditorModels.swift in Sources */,
 				E4C1833E4DEC793A7E3E5D1F /* ExportPanel.swift in Sources */,
@@ -509,6 +531,7 @@
 				482E5D7C61AC6B6E33BCF9BB /* LicensesView.swift in Sources */,
 				DF814339811D71BAEDFD7A7C /* MeditorApp.swift in Sources */,
 				56F77BBD1A8603DA4687B985 /* MermaidDocument.swift in Sources */,
+				2728EFBCB9EC715ED794F241 /* MermaidEditorCommand.swift in Sources */,
 				743B82264A0E1A2376FB25EC /* MermaidPreviewWebView.swift in Sources */,
 				AF6235415B22B951CA9479AE /* MermaidSyntaxHighlighter.swift in Sources */,
 				8878F1C3506984629F06822C /* MermaidTemplate.swift in Sources */,
@@ -520,6 +543,7 @@
 				931024EEF1C2DE270A839520 /* PublishViewModel.swift in Sources */,
 				60E7379CAA6D46215912C2AA /* PublishedLinkStore.swift in Sources */,
 				435EC86A9C88086B424680FA /* PublishedLinksView.swift in Sources */,
+				1F9A4E6657967C7DB72BAF22 /* RenameDiagramSheet.swift in Sources */,
 				EEC049A96AF4B32E0114B83B /* RenderErrorBanner.swift in Sources */,
 				E195888BCD4111E8EC872BBF /* RenderStore.swift in Sources */,
 				36D8BFC13FF127A1F1C3940F /* RendererResources.swift in Sources */,

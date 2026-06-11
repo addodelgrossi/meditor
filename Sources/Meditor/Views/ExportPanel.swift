@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct ExportPanel: View {
@@ -10,6 +11,8 @@ struct ExportPanel: View {
     @State private var themePreset = ExportThemePreset.current
     @State private var background: ExportBackground
     @State private var errorMessage: String?
+    @State private var resultMessage: String?
+    @State private var batchProgress: (current: Int, total: Int)?
 
     @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
     @AppStorage("defaultExportBackground") private var exportBackgroundRaw = ""
@@ -45,7 +48,20 @@ struct ExportPanel: View {
                 }
                 .disabled(!isReady)
 
+                Button("Export All Themes…") {
+                    exportAllThemes()
+                }
+                .disabled(batchProgress != nil || !isReady)
+
                 Spacer()
+
+                if let batchProgress {
+                    ProgressView(value: Double(batchProgress.current), total: Double(batchProgress.total))
+                        .frame(width: 120)
+                    Text("\(batchProgress.current)/\(batchProgress.total)")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
 
                 Button("Copy Image") {
                     performCatching {
@@ -80,6 +96,11 @@ struct ExportPanel: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "")
+        }
+        .alert("Export complete", isPresented: resultAlertIsPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(resultMessage ?? "")
         }
     }
 
@@ -175,11 +196,94 @@ struct ExportPanel: View {
         )
     }
 
+    private var resultAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { resultMessage != nil },
+            set: { if !$0 { resultMessage = nil } }
+        )
+    }
+
     private func performCatching(_ action: () throws -> Void) {
         do {
             try action()
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func exportAllThemes() {
+        let panel = NSOpenPanel()
+        panel.title = String(localized: "Export All Themes")
+        panel.prompt = String(localized: "Choose")
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.canCreateDirectories = true
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let directory = panel.url else { return }
+
+        let batchFormat = format
+        let batchScale = exportScale
+        let batchBackground = background
+        let destinations = ExportService.batchURLs(
+            directory: directory,
+            suggestedName: suggestedName,
+            format: batchFormat
+        )
+        let collisions = destinations.filter {
+            FileManager.default.fileExists(atPath: $0.url.path)
+        }
+        if !collisions.isEmpty {
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Replace existing exports?")
+            alert.informativeText = String(
+                localized: "\(collisions.count) file(s) already exist in the selected folder."
+            )
+            alert.addButton(withTitle: String(localized: "Replace"))
+            alert.addButton(withTitle: String(localized: "Cancel"))
+            guard alert.runModal() == .alertFirstButtonReturn else { return }
+        }
+
+        batchProgress = (0, destinations.count)
+        Task { @MainActor in
+            var activeTheme: MermaidTheme?
+            do {
+                var outputs: [(url: URL, data: Data)] = []
+                for (index, destination) in destinations.enumerated() {
+                    batchProgress = (index, destinations.count)
+                    activeTheme = destination.theme
+                    let result = try await DiagramRenderService.shared.render(
+                        code: code,
+                        theme: destination.theme
+                    )
+                    outputs.append(
+                        (
+                            destination.url,
+                            try ExportService.data(
+                                svg: result.svg,
+                                format: batchFormat,
+                                scale: batchScale,
+                                background: batchBackground
+                            )
+                        )
+                    )
+                    batchProgress = (index + 1, destinations.count)
+                }
+                activeTheme = nil
+                try ExportService.writeBatch(outputs)
+                batchProgress = nil
+                resultMessage = String(
+                    localized: "Exported \(outputs.count) themed diagram(s) to \(directory.lastPathComponent)."
+                )
+            } catch {
+                batchProgress = nil
+                if let activeTheme {
+                    errorMessage = String(
+                        localized: "The \(activeTheme.rawValue) theme failed: \(error.localizedDescription)"
+                    )
+                } else {
+                    errorMessage = error.localizedDescription
+                }
+            }
         }
     }
 }

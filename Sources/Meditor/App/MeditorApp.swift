@@ -30,6 +30,7 @@ struct MeditorApp: App {
         WindowGroup("Presentation", id: "presentation", for: PresentationDeck.self) { deck in
             if let deck = deck.wrappedValue, !deck.slides.isEmpty {
                 PresentationView(deck: deck)
+                    .preferredColorScheme(appAppearance.colorScheme)
             }
         }
         .defaultSize(width: 1_280, height: 800)

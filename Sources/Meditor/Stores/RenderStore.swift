@@ -7,6 +7,7 @@ final class RenderStore: ObservableObject {
     @Published private(set) var isRendering = false
     @Published private(set) var error: MermaidRenderError?
     @Published private(set) var info: MermaidRenderInfo?
+    @Published private(set) var analysis: DiagramAnalysis?
     @Published private(set) var lastSVG: String?
     @Published private(set) var successfulSignature: String?
 
@@ -42,6 +43,7 @@ final class RenderStore: ObservableObject {
         lastSignature = signature
         pendingCode = code
         pendingTheme = theme
+        analysis = nil
         requestID += 1
         let currentID = requestID
 
@@ -50,6 +52,7 @@ final class RenderStore: ObservableObject {
             isRendering = false
             error = nil
             info = nil
+            analysis = nil
             lastSVG = nil
             successfulSignature = nil
             clearCanvas()
@@ -78,7 +81,11 @@ final class RenderStore: ObservableObject {
                 width: message["width"] as? Double ?? 0,
                 height: message["height"] as? Double ?? 0
             )
+            analysis = DiagramRenderService.decodeAnalysis(message["analysis"]).map {
+                DiagramSourceTools.enrich($0, source: pendingCode)
+            }
         } else {
+            analysis = nil
             error = MermaidRenderError(
                 message: message["message"] as? String ?? String(localized: "Unable to render diagram"),
                 line: message["line"] as? Int,

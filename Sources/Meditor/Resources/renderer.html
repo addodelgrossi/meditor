@@ -141,6 +141,154 @@
         const raw = String(error && (error.str || error.message) || error || "Unable to render diagram");
         return raw.split("\n")[0].replace(/^Error:\s*/, "");
       };
+      const values = value => {
+        if (value instanceof Map) return [...value.values()];
+        if (Array.isArray(value)) return value;
+        if (value && typeof value === "object") return Object.values(value);
+        return [];
+      };
+      const entries = value => {
+        if (value instanceof Map) return [...value.entries()];
+        if (value && typeof value === "object") return Object.entries(value);
+        return [];
+      };
+      const label = (value, fallback) => {
+        const candidate = value && (
+          value.text || value.label || value.description || value.name ||
+          value.title || value.descr || value.id
+        );
+        if (typeof candidate === "string" && candidate.trim()) return candidate.trim();
+        if (candidate && typeof candidate.text === "string") return candidate.text.trim();
+        return String(fallback || "");
+      };
+      const item = (kind, id, value, children = []) => ({
+        id: `${kind}:${id}`,
+        identifier: String(id),
+        title: label(value, id),
+        kind,
+        children,
+        line: null
+      });
+      const connection = (id, from, to, text) => ({
+        id: String(id),
+        from: String(from),
+        to: String(to),
+        label: text ? String(text) : null
+      });
+      const parentIdentifier = value => {
+        const candidate = value && (
+          value.parent || value.parentId || value.group || value.groupId || value.in
+        );
+        if (typeof candidate === "string" || typeof candidate === "number") return String(candidate);
+        if (candidate && (candidate.id || candidate.identifier)) {
+          return String(candidate.id || candidate.identifier);
+        }
+        return null;
+      };
+      const normalizeAnalysis = diagram => {
+        const db = diagram.db;
+        let outline = [];
+        let connections = [];
+        let elementCount = null;
+        let connectionCount = null;
+
+        if (diagram.type.startsWith("flowchart")) {
+          const vertices = entries(db.getVertices());
+          const nodeById = new Map(vertices.map(([id, value]) => [String(id), item("node", id, value)]));
+          const grouped = new Set();
+          const groups = values(db.getSubGraphs()).map(group => {
+            const children = values(group.nodes).map(id => {
+              grouped.add(String(id));
+              return nodeById.get(String(id));
+            }).filter(Boolean);
+            return item("subgraph", group.id, { title: group.title }, children);
+          });
+          outline = [...groups, ...[...nodeById.entries()].filter(([id]) => !grouped.has(id)).map(([, node]) => node)];
+          connections = values(db.getEdges()).map((edge, index) =>
+            connection(edge.id || `edge:${index}`, edge.start, edge.end, edge.text)
+          );
+          elementCount = vertices.length;
+          connectionCount = connections.length;
+        } else if (diagram.type === "sequence") {
+          outline = entries(db.getActors()).map(([id, actor]) =>
+            item(actor.type === "actor" ? "actor" : "participant", id, actor)
+          );
+          connections = values(db.getMessages()).filter(message => message.from && message.to).map((message, index) =>
+            connection(message.id || `message:${index}`, message.from, message.to, message.message)
+          );
+          elementCount = outline.length;
+          connectionCount = connections.length;
+        } else if (diagram.type === "class") {
+          outline = entries(db.getClasses()).map(([id, value]) => item("class", id, value));
+          connections = values(db.getRelations()).map((relation, index) =>
+            connection(relation.id || `relation:${index}`, relation.id1, relation.id2, relation.title)
+          );
+          elementCount = outline.length;
+          connectionCount = connections.length;
+        } else if (diagram.type === "stateDiagram") {
+          outline = entries(db.getStates()).map(([id, value]) => item("state", id, value));
+          connections = values(db.getRelations()).map((relation, index) =>
+            connection(`transition:${index}`, relation.id1, relation.id2, relation.relationTitle)
+          );
+          elementCount = outline.length;
+          connectionCount = connections.length;
+        } else if (diagram.type === "er") {
+          outline = entries(db.getEntities()).map(([id, value]) => item("entity", id, value));
+          connections = values(db.getRelationships()).map((relation, index) =>
+            connection(`relationship:${index}`, relation.entityA, relation.entityB, relation.roleA)
+          );
+          elementCount = outline.length;
+          connectionCount = connections.length;
+        } else if (diagram.type === "mindmap") {
+          const stack = [];
+          values(db.nodes).forEach((value, index) => {
+            const node = item("mindmapNode", value.nodeId || value.id || index, value);
+            const level = Number(value.level) || 0;
+            while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+            if (stack.length) stack[stack.length - 1].node.children.push(node);
+            else outline.push(node);
+            stack.push({ level, node });
+          });
+          elementCount = values(db.nodes).length;
+        } else if (diagram.type === "architecture") {
+          const groups = entries(db.getGroups()).map(([id, value]) => item("group", id, value));
+          const services = entries(db.getServices()).map(([id, value]) => item("service", id, value));
+          const junctions = entries(db.getJunctions()).map(([id, value]) => item("junction", id, value));
+          const groupById = new Map(groups.map(group => [group.identifier, group]));
+          const grouped = new Set();
+          entries(db.getGroups()).forEach(([id, value]) => {
+            const parent = groupById.get(parentIdentifier(value));
+            const group = groupById.get(String(id));
+            if (parent && group) {
+              parent.children.push(group);
+              grouped.add(group.id);
+            }
+          });
+          [...entries(db.getServices()), ...entries(db.getJunctions())].forEach(([id, value]) => {
+            const parent = groupById.get(parentIdentifier(value));
+            const child = [...services, ...junctions].find(candidate => candidate.identifier === String(id));
+            if (parent && child) {
+              parent.children.push(child);
+              grouped.add(child.id);
+            }
+          });
+          outline = [...groups, ...services, ...junctions].filter(candidate => !grouped.has(candidate.id));
+          connections = values(db.getEdges()).map((edge, index) =>
+            connection(`edge:${index}`, edge.lhsId, edge.rhsId, edge.title)
+          );
+          elementCount = groups.length + services.length + junctions.length;
+          connectionCount = connections.length;
+        }
+
+        return {
+          diagramType: diagram.type,
+          elementCount,
+          connectionCount,
+          outline,
+          connections,
+          issues: []
+        };
+      };
 
       window.Meditor = {
         async render(request) {
@@ -158,6 +306,7 @@
             });
             await mermaid.parse(request.code);
             const diagramType = mermaid.detectType(request.code);
+            const analysis = normalizeAnalysis(await mermaid.mermaidAPI.getDiagramFromText(request.code));
             const rendered = await mermaid.render(`meditor-${request.id}`, request.code);
             graph.innerHTML = rendered.svg;
             graph.querySelectorAll("a").forEach(link => {
@@ -187,6 +336,7 @@
               success: true,
               svg: rendered.svg,
               diagramType,
+              analysis,
               width: size.width,
               height: size.height
             });

@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct WorkspaceActions {
@@ -6,6 +7,9 @@ struct WorkspaceActions {
     let export: () -> Void
     let startPresentation: () -> Void
     let publish: () -> Void
+    let copyMarkdown: () -> Void
+    let toggleInspector: () -> Void
+    let isInspectorShown: Bool
     let canPublish: Bool
 }
 
@@ -23,6 +27,7 @@ extension FocusedValues {
 struct MeditorCommands: Commands {
     @FocusedValue(\.workspaceActions) private var actions
     @Environment(\.openWindow) private var openWindow
+    @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
@@ -57,6 +62,17 @@ struct MeditorCommands: Commands {
 
             Divider()
 
+            Button("Copy as Markdown Mermaid Block") {
+                actions?.copyMarkdown()
+            }
+
+            Button(actions?.isInspectorShown == true ? "Hide Inspector" : "Show Inspector") {
+                actions?.toggleInspector()
+            }
+            .keyboardShortcut("i", modifiers: [.command, .option])
+
+            Divider()
+
             Button("Fit diagram") {
                 actions?.fitPreview()
             }
@@ -74,5 +90,26 @@ struct MeditorCommands: Commands {
             }
             .keyboardShortcut(.return, modifiers: [.command, .shift])
         }
+
+        CommandGroup(after: .toolbar) {
+            Button("Toggle Light/Dark Appearance") {
+                toggleAppearance()
+            }
+            .keyboardShortcut("l", modifiers: [.command, .shift])
+        }
+    }
+
+    private func toggleAppearance() {
+        let appearance = AppAppearance.resolved(appAppearanceRaw)
+        let isDark: Bool
+        switch appearance {
+        case .system:
+            isDark = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        case .light:
+            isDark = false
+        case .dark:
+            isDark = true
+        }
+        appAppearanceRaw = isDark ? AppAppearance.light.rawValue : AppAppearance.dark.rawValue
     }
 }

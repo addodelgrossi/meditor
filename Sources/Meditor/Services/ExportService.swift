@@ -30,6 +30,11 @@ enum ExportService {
         NSPasteboard.general.setString(svg, forType: .string)
     }
 
+    static func copyMarkdownBlock(_ source: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(DiagramSourceTools.markdownBlock(for: source), forType: .string)
+    }
+
     static func copyImage(_ svg: String, scale: ExportScale, background: ExportBackground) throws {
         let png = try pngData(svg: svg, scale: scale, background: background)
         let pdf = try pdfData(svg: svg, background: background)
@@ -63,6 +68,53 @@ enum ExportService {
             return try pngData(svg: svg, scale: scale, background: background)
         case .pdf:
             return try pdfData(svg: svg, background: background)
+        }
+    }
+
+    static func batchURLs(
+        directory: URL,
+        suggestedName: String,
+        format: ExportFormat
+    ) -> [(theme: MermaidTheme, url: URL)] {
+        let baseName = safeFileName(suggestedName)
+        return MermaidTheme.allCases.map { theme in
+            (
+                theme,
+                directory.appendingPathComponent(
+                    "\(baseName)-\(theme.rawValue).\(format.fileExtension)"
+                )
+            )
+        }
+    }
+
+    static func writeBatch(_ outputs: [(url: URL, data: Data)]) throws {
+        guard let directory = outputs.first?.url.deletingLastPathComponent() else { return }
+        let stagingDirectory = directory.appendingPathComponent(
+            ".meditor-export-\(UUID().uuidString)",
+            isDirectory: true
+        )
+        try FileManager.default.createDirectory(
+            at: stagingDirectory,
+            withIntermediateDirectories: false
+        )
+        defer { try? FileManager.default.removeItem(at: stagingDirectory) }
+
+        var staged: [(source: URL, destination: URL)] = []
+        for output in outputs {
+            let stagedURL = stagingDirectory.appendingPathComponent(output.url.lastPathComponent)
+            try output.data.write(to: stagedURL, options: .atomic)
+            staged.append((stagedURL, output.url))
+        }
+
+        for item in staged {
+            if FileManager.default.fileExists(atPath: item.destination.path) {
+                _ = try FileManager.default.replaceItemAt(
+                    item.destination,
+                    withItemAt: item.source
+                )
+            } else {
+                try FileManager.default.moveItem(at: item.source, to: item.destination)
+            }
         }
     }
 
@@ -137,6 +189,13 @@ enum ExportService {
         case .png: .png
         case .pdf: .pdf
         }
+    }
+
+    private static func safeFileName(_ name: String) -> String {
+        let invalid = CharacterSet(charactersIn: "/:")
+        let components = name.components(separatedBy: invalid)
+        let result = components.filter { !$0.isEmpty }.joined(separator: "-")
+        return result.isEmpty ? "Diagram" : result
     }
 
     enum ExportError: LocalizedError {

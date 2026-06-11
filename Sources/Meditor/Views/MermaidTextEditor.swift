@@ -5,6 +5,7 @@ struct MermaidTextEditor: NSViewRepresentable {
     @Binding var text: String
     let errorLine: Int?
     let navigateToLine: Int?
+    @Binding var command: MermaidEditorCommand?
     let fontName: String
     let fontSize: Double
     let wrapsLines: Bool
@@ -28,6 +29,7 @@ struct MermaidTextEditor: NSViewRepresentable {
         textView.isAutomaticDashSubstitutionEnabled = false
         textView.isAutomaticTextReplacementEnabled = false
         textView.allowsUndo = true
+        Self.configureFind(in: textView)
         textView.textContainerInset = NSSize(width: 12, height: 16)
         textView.insertionPointColor = .controlAccentColor
         textView.setAccessibilityLabel(String(localized: "Mermaid source editor"))
@@ -73,6 +75,16 @@ struct MermaidTextEditor: NSViewRepresentable {
             context.coordinator.lastNavigatedLine = navigateToLine
             context.coordinator.navigate(to: navigateToLine)
         }
+
+        if command?.id != context.coordinator.lastCommandID, let command {
+            context.coordinator.lastCommandID = command.id
+            context.coordinator.replaceText(using: command)
+            Task { @MainActor in
+                if context.coordinator.parent.command?.id == command.id {
+                    context.coordinator.parent.command = nil
+                }
+            }
+        }
     }
 
     private func configureWrapping(textView: NSTextView, scrollView: NSScrollView) {
@@ -90,12 +102,32 @@ struct MermaidTextEditor: NSViewRepresentable {
             ?? .monospacedSystemFont(ofSize: fontSize, weight: .regular)
     }
 
+    static func configureFind(in textView: NSTextView) {
+        textView.usesFindBar = true
+        textView.isIncrementalSearchingEnabled = true
+    }
+
+    static func apply(_ command: MermaidEditorCommand, to textView: NSTextView) {
+        let selection = textView.selectedRange()
+        let fullRange = NSRange(location: 0, length: (textView.string as NSString).length)
+        textView.window?.makeFirstResponder(textView)
+        textView.insertText(command.replacementText, replacementRange: fullRange)
+        textView.undoManager?.setActionName(command.actionName)
+        textView.setSelectedRange(
+            NSRange(
+                location: min(selection.location, (command.replacementText as NSString).length),
+                length: 0
+            )
+        )
+    }
+
     @MainActor
     final class Coordinator: NSObject, NSTextViewDelegate, @preconcurrency NSTextStorageDelegate {
         var parent: MermaidTextEditor
         weak var ruler: LineNumberRulerView?
         weak var textView: NSTextView?
         var lastNavigatedLine: Int?
+        var lastCommandID: UUID?
 
         init(parent: MermaidTextEditor) {
             self.parent = parent
@@ -133,6 +165,11 @@ struct MermaidTextEditor: NSViewRepresentable {
             textView.setSelectedRange(range)
             textView.scrollRangeToVisible(range)
             textView.window?.makeFirstResponder(textView)
+        }
+
+        func replaceText(using command: MermaidEditorCommand) {
+            guard let textView else { return }
+            MermaidTextEditor.apply(command, to: textView)
         }
     }
 }

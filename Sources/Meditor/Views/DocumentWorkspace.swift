@@ -12,6 +12,10 @@ struct DocumentWorkspace: View {
     @State private var showsPublishPopover = false
     @State private var showsExportPanel = false
     @State private var showsPresentationBuilder = false
+    @State private var editorCommand: MermaidEditorCommand?
+    @State private var renameTarget: DiagramOutlineItem?
+    @State private var actionErrorMessage: String?
+    @SceneStorage("showsDiagramInspector") private var showsDiagramInspector = false
 
     @AppStorage("editorFontSize") private var editorFontSize = 14.0
     @AppStorage("editorFontName") private var editorFontName = "SF Mono"
@@ -46,6 +50,9 @@ struct DocumentWorkspace: View {
                 export: { showsExportPanel = true },
                 startPresentation: { showsPresentationBuilder = true },
                 publish: { showsPublishPopover = true },
+                copyMarkdown: { ExportService.copyMarkdownBlock(document.text) },
+                toggleInspector: { showsDiagramInspector.toggle() },
+                isInspectorShown: showsDiagramInspector,
                 canPublish: canPublish
             )
         )
@@ -62,6 +69,28 @@ struct DocumentWorkspace: View {
                 currentTitle: documentTitle,
                 theme: theme
             )
+        }
+        .sheet(item: $renameTarget) { item in
+            RenameDiagramSheet(
+                source: document.text,
+                diagramType: renderStore.analysis?.diagramType ?? "",
+                item: item
+            ) { newIdentifier in
+                rename(item, to: newIdentifier)
+            }
+        }
+        .inspector(isPresented: $showsDiagramInspector) {
+            DiagramInspectorView(
+                analysis: renderStore.analysis,
+                isRendering: renderStore.isRendering,
+                onNavigate: navigate,
+                onRename: { renameTarget = $0 }
+            )
+        }
+        .alert("Unable to update diagram", isPresented: actionErrorIsPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(actionErrorMessage ?? "")
         }
     }
 
@@ -88,6 +117,7 @@ struct DocumentWorkspace: View {
                 text: $document.text,
                 errorLine: renderStore.error?.line,
                 navigateToLine: navigateToLine,
+                command: $editorCommand,
                 fontName: editorFontName,
                 fontSize: editorFontSize,
                 wrapsLines: wrapsLines
@@ -223,6 +253,14 @@ struct DocumentWorkspace: View {
             }
             .disabled(renderStore.lastSVG == nil)
         }
+
+        ToolbarItem {
+            Button {
+                showsDiagramInspector.toggle()
+            } label: {
+                Label("Diagram Inspector", systemImage: "sidebar.trailing")
+            }
+        }
     }
 
     private var documentTitle: String {
@@ -233,4 +271,49 @@ struct DocumentWorkspace: View {
         renderStore.canPublish(code: document.text, theme: theme)
     }
 
+    private var actionErrorIsPresented: Binding<Bool> {
+        Binding(
+            get: { actionErrorMessage != nil },
+            set: { if !$0 { actionErrorMessage = nil } }
+        )
+    }
+
+    private func navigate(to line: Int) {
+        navigateToLine = nil
+        Task { @MainActor in
+            navigateToLine = line
+        }
+    }
+
+    private func rename(_ item: DiagramOutlineItem, to newIdentifier: String) {
+        let originalSource = document.text
+        Task { @MainActor in
+            do {
+                let plan = try DiagramSourceTools.renamePlan(
+                    source: originalSource,
+                    diagramType: renderStore.analysis?.diagramType ?? "",
+                    item: item,
+                    newIdentifier: newIdentifier
+                )
+                _ = try await DiagramRenderService.shared.render(code: plan.source, theme: theme)
+                guard document.text == originalSource else {
+                    throw WorkspaceActionError.sourceChanged
+                }
+                editorCommand = MermaidEditorCommand(
+                    replacementText: plan.source,
+                    actionName: String(localized: "Rename Diagram Identifier")
+                )
+            } catch {
+                actionErrorMessage = error.localizedDescription
+            }
+        }
+    }
+}
+
+private enum WorkspaceActionError: LocalizedError {
+    case sourceChanged
+
+    var errorDescription: String? {
+        String(localized: "The source changed while the rename was being validated. Try again.")
+    }
 }
