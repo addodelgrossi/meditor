@@ -38,7 +38,8 @@ flowchart LR
 - Crisp offline preview with pan, zoom, themes, and last-valid-preview recovery
 - Templates for flowcharts, sequences, classes, states, ER, Gantt, mindmaps, architecture, and C4 context diagrams
 - Rich SVG, retina PNG, and PDF export with theme and background controls
-- Smart image clipboard with SVG, PDF, PNG, and TIFF representations
+- Welcome hub with recent documents, blank diagrams, and built-in templates
+- One-click smart image clipboard with SVG, PDF, PNG, and TIFF representations
 - Full-screen presentations with temporary multi-file decks, slide navigation, and node highlighting
 - Publish a view-only link with auto-expiry and a social preview (powered by
   [meditor-cloud](https://github.com/addodelgrossi/meditor-cloud)); manage or
@@ -66,7 +67,8 @@ The generated application is placed at `dist/Meditor.app`.
 | Zoom | Toolbar controls or `Command` + scroll |
 | Fit diagram | Double-click the canvas or press `Command + 0` |
 | Switch layout | `Command + Option + 1`, `2`, or `3` |
-| Export or copy image | `Command + Shift + E` |
+| Copy image | Toolbar, preview context menu, or `Command + Shift + C` |
+| Export with options | `Command + Shift + E` |
 | Build presentation | `Command + Shift + Return` |
 
 ## Presentation Controls

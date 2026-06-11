@@ -9,6 +9,7 @@ final class RenderStore: ObservableObject {
     @Published private(set) var info: MermaidRenderInfo?
     @Published private(set) var analysis: DiagramAnalysis?
     @Published private(set) var lastSVG: String?
+    @Published private(set) var lastSuccessfulTheme: MermaidTheme?
     @Published private(set) var successfulSignature: String?
 
     private weak var webView: WKWebView?
@@ -54,6 +55,7 @@ final class RenderStore: ObservableObject {
             info = nil
             analysis = nil
             lastSVG = nil
+            lastSuccessfulTheme = nil
             successfulSignature = nil
             clearCanvas()
             return
@@ -74,6 +76,7 @@ final class RenderStore: ObservableObject {
         if message["success"] as? Bool == true {
             guard let svg = message["svg"] as? String else { return }
             lastSVG = svg
+            lastSuccessfulTheme = pendingTheme
             successfulSignature = Self.signature(code: pendingCode, theme: pendingTheme)
             error = nil
             info = MermaidRenderInfo(

@@ -7,9 +7,11 @@ struct WorkspaceActions {
     let export: () -> Void
     let startPresentation: () -> Void
     let publish: () -> Void
+    let copyImage: () -> Void
     let copyMarkdown: () -> Void
     let toggleInspector: () -> Void
     let isInspectorShown: Bool
+    let canCopyImage: Bool
     let canPublish: Bool
 }
 
@@ -61,6 +63,12 @@ struct MeditorCommands: Commands {
             .keyboardShortcut("3", modifiers: [.command, .option])
 
             Divider()
+
+            Button("Copy Image") {
+                actions?.copyImage()
+            }
+            .keyboardShortcut("c", modifiers: [.command, .shift])
+            .disabled(actions?.canCopyImage != true)
 
             Button("Copy as Markdown Mermaid Block") {
                 actions?.copyMarkdown()

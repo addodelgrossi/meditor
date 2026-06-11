@@ -29,6 +29,18 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertTrue(MermaidTemplate.all.allSatisfy { !$0.source.isEmpty })
     }
 
+    func testWelcomeRecentDocumentsFiltersMissingDuplicatesAndLimitsResults() {
+        let urls = (1...7).map {
+            URL(fileURLWithPath: "/tmp/diagram-\($0).mmd")
+        }
+        let results = WelcomeDocumentLibrary.recentDocuments(
+            from: [urls[0], urls[1], urls[0], urls[2], urls[3], urls[4], urls[5], urls[6]],
+            fileExists: { $0 != urls[2].path }
+        )
+
+        XCTAssertEqual(results, [urls[0], urls[1], urls[3], urls[4], urls[5]])
+    }
+
     @MainActor
     func testLineRangeLocatesSyntaxErrorLine() {
         let source = "flowchart LR\n    A --> B\n    B --> C" as NSString
@@ -377,6 +389,38 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertFalse(types.contains(.string))
     }
 
+    @MainActor
+    func testQuickCopyUsesTwoTimesOpaqueBackgroundAndRichRepresentations() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 20 10">
+          <circle cx="10" cy="5" r="2" fill="#39d1d8"/>
+        </svg>
+        """
+
+        try ExportService.copyImageForSharing(svg, theme: .default)
+
+        let item = try XCTUnwrap(NSPasteboard.general.pasteboardItems?.first)
+        let png = try XCTUnwrap(item.data(forType: .png))
+        let bitmap = try XCTUnwrap(NSBitmapImageRep(data: png))
+        let background = try XCTUnwrap(bitmap.colorAt(x: 0, y: 0))
+        XCTAssertEqual(bitmap.pixelsWide, 40)
+        XCTAssertEqual(bitmap.pixelsHigh, 20)
+        XCTAssertEqual(background.redComponent, 1, accuracy: 0.01)
+        XCTAssertEqual(background.greenComponent, 1, accuracy: 0.01)
+        XCTAssertEqual(background.blueComponent, 1, accuracy: 0.01)
+        XCTAssertTrue(item.types.contains(.tiff))
+        XCTAssertTrue(item.types.contains(.pdf))
+        XCTAssertTrue(item.types.contains(NSPasteboard.PasteboardType(UTType.svg.identifier)))
+        XCTAssertFalse(item.types.contains(.string))
+    }
+
+    @MainActor
+    func testQuickCopyBackgroundTracksVisibleTheme() {
+        XCTAssertEqual(ExportService.sharingBackground(for: .dark), .dark)
+        XCTAssertEqual(ExportService.sharingBackground(for: .default), .light)
+        XCTAssertEqual(ExportService.sharingBackground(for: .forest), .light)
+    }
+
     func testExportThemePresetsAndLegacyBackgroundMigration() {
         XCTAssertEqual(ExportThemePreset.current.resolved(currentTheme: .forest), .forest)
         XCTAssertEqual(ExportThemePreset.light.resolved(currentTheme: .forest), .default)
@@ -450,6 +494,29 @@ final class MeditorCoreTests: XCTestCase {
 
         XCTAssertEqual(store.lastSVG, "<svg id=\"first\"/>")
         XCTAssertNil(store.error)
+    }
+
+    @MainActor
+    func testRenderStoreKeepsLastSuccessfulThemeAfterInvalidSource() {
+        let store = RenderStore()
+        store.scheduleRender(code: "flowchart LR\nA-->B", theme: .dark)
+        store.handle(message: [
+            "id": 1,
+            "success": true,
+            "svg": "<svg id=\"valid\"/>",
+            "diagramType": "flowchart-v2",
+            "width": 100.0,
+            "height": 50.0
+        ])
+        store.scheduleRender(code: "flowchart LR\nA-->", theme: .forest)
+        store.handle(message: [
+            "id": 2,
+            "success": false,
+            "message": "invalid"
+        ])
+
+        XCTAssertEqual(store.lastSVG, "<svg id=\"valid\"/>")
+        XCTAssertEqual(store.lastSuccessfulTheme, .dark)
     }
 
     @MainActor

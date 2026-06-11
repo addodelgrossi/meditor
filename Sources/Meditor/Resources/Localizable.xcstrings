@@ -429,6 +429,51 @@
     },
     "Untitled Diagram" : {
       "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Diagrama sem título" } } }
+    },
+    "Choose a starting point and make it your own." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha um ponto de partida e personalize como quiser." } } }
+    },
+    "Create, preview, and share Mermaid diagrams." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Crie, visualize e compartilhe diagramas Mermaid." } } }
+    },
+    "Image copied" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Imagem copiada" } } }
+    },
+    "New diagram" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Novo diagrama" } } }
+    },
+    "OK" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "OK" } } }
+    },
+    "Open" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir" } } }
+    },
+    "Open an existing .mmd or .mermaid file" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abra um arquivo .mmd ou .mermaid existente" } } }
+    },
+    "Open file…" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir arquivo…" } } }
+    },
+    "Open Mermaid Diagram" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir diagrama Mermaid" } } }
+    },
+    "Recent" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Recentes" } } }
+    },
+    "Start with a template" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Comece com um modelo" } } }
+    },
+    "Start with an empty Mermaid document" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Comece com um documento Mermaid vazio" } } }
+    },
+    "Unable to copy image" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível copiar a imagem" } } }
+    },
+    "Unable to open document" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível abrir o documento" } } }
+    },
+    "Welcome to Meditor" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Boas-vindas ao Meditor" } } }
     }
   },
   "version" : "1.0"
