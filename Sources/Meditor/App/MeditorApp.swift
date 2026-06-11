@@ -12,9 +12,18 @@ struct MeditorApp: App {
                 .preferredColorScheme(appAppearance.colorScheme)
         }
         .defaultSize(width: 1_280, height: 800)
+        .defaultLaunchBehavior(.suppressed)
         .commands {
             MeditorCommands()
         }
+
+        Window("Welcome to Meditor", id: "welcome") {
+            WelcomeView()
+                .preferredColorScheme(appAppearance.colorScheme)
+        }
+        .defaultSize(width: 1_080, height: 780)
+        .defaultLaunchBehavior(.presented)
+        .restorationBehavior(.disabled)
 
         Settings {
             SettingsView()

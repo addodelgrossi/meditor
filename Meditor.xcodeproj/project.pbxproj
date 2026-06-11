@@ -61,10 +61,10 @@
 		EDF84B61DE65B3EED6701B50 /* renderer.html in Resources */ = {isa = PBXBuildFile; fileRef = 9AE1386018B8FBBC05A1BA60 /* renderer.html */; };
 		EEC049A96AF4B32E0114B83B /* RenderErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715BBAF43F805DE6507EC075 /* RenderErrorBanner.swift */; };
 		F1367C8A84188191EA280E43 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B28A19E7CC71C21D00B31C5 /* AppPreferences.swift */; };
+		F4C1CBF9488DC35D81BA46AD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D18E73BFC941C9178E17213 /* WelcomeView.swift */; };
 		F65438D8716AB45C6B11AE0C /* MeditorCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F3B99DE8ED40AA004FFF4D /* MeditorCoreTests.swift */; };
 		FAE40B2E27EBA30B5BE4ADF6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC3C494D0A9354CCE6E87062 /* Localizable.strings */; };
 		FD79BDA0146FFF9A06291F56 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A807777716B71251553FC92A /* KeychainStore.swift */; };
-		FDB6655E174B536017DED3A7 /* TemplateGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCC21C4E861CA17098C1F767 /* TemplateGallery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +121,7 @@
 		5274C6FCEF48F95C4F2816C1 /* PublishViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishViewModel.swift; sourceTree = "<group>"; };
 		533B046C7C9A4EC7B5436F7B /* MermaidSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		678B29601EBA5FFE01157084 /* ShareServiceURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareServiceURL.swift; sourceTree = "<group>"; };
+		6D18E73BFC941C9178E17213 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		715BBAF43F805DE6507EC075 /* RenderErrorBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderErrorBanner.swift; sourceTree = "<group>"; };
 		77CC134B302F30A5BD60B440 /* MeditorQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeditorQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		792DC3B6AE8296193E09F408 /* DocumentWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentWorkspace.swift; sourceTree = "<group>"; };
@@ -144,7 +145,6 @@
 		B9DD39C3884504CA517F726A /* MermaidPreviewWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidPreviewWebView.swift; sourceTree = "<group>"; };
 		BF9493CC5853384A166A4611 /* MermaidTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidTextEditor.swift; sourceTree = "<group>"; };
 		C770D4C78F981BFFC0B5B1D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CCC21C4E861CA17098C1F767 /* TemplateGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateGallery.swift; sourceTree = "<group>"; };
 		D19104C3D8C2ECA949D00DD1 /* Meditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D255A42E46E27101E4E67EF2 /* MermaidDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidDocument.swift; sourceTree = "<group>"; };
 		D29938E59B29BB6161E9A478 /* MermaidRendererIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidRendererIntegrationTests.swift; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 				8576C5D88F772E6D28394A64 /* RenameDiagramSheet.swift */,
 				715BBAF43F805DE6507EC075 /* RenderErrorBanner.swift */,
 				98CE57EFC4A544EC8C2DE291 /* SettingsView.swift */,
-				CCC21C4E861CA17098C1F767 /* TemplateGallery.swift */,
+				6D18E73BFC941C9178E17213 /* WelcomeView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -552,7 +552,7 @@
 				A9CADD73D5EA28E98C2CF710 /* ShareServiceURL.swift in Sources */,
 				62BFB863A506812E8106FDDC /* Sharing.swift in Sources */,
 				0861310AFC8643E6FD8FFB1B /* SocialPreviewRenderer.swift in Sources */,
-				FDB6655E174B536017DED3A7 /* TemplateGallery.swift in Sources */,
+				F4C1CBF9488DC35D81BA46AD /* WelcomeView.swift in Sources */,
 				5847C061F430CA5744CE3F5E /* WorkspaceCommands.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

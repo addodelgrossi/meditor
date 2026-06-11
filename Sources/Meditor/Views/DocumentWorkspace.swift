@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DocumentWorkspace: View {
+    @Environment(\.dismissWindow) private var dismissWindow
     @Binding var document: MermaidDocument
     let fileURL: URL?
 
@@ -8,12 +9,14 @@ struct DocumentWorkspace: View {
     @State private var mode = WorkspaceMode.split
     @State private var theme = AppPreferences.shared.defaultTheme
     @State private var navigateToLine: Int?
-    @State private var showsTemplateGallery = true
     @State private var showsPublishPopover = false
     @State private var showsExportPanel = false
     @State private var showsPresentationBuilder = false
+    @State private var showsImageCopied = false
+    @State private var copyFeedbackTask: Task<Void, Never>?
     @State private var editorCommand: MermaidEditorCommand?
     @State private var renameTarget: DiagramOutlineItem?
+    @State private var actionErrorTitle = String(localized: "Unable to update diagram")
     @State private var actionErrorMessage: String?
     @SceneStorage("showsDiagramInspector") private var showsDiagramInspector = false
 
@@ -50,9 +53,11 @@ struct DocumentWorkspace: View {
                 export: { showsExportPanel = true },
                 startPresentation: { showsPresentationBuilder = true },
                 publish: { showsPublishPopover = true },
+                copyImage: copyImage,
                 copyMarkdown: { ExportService.copyMarkdownBlock(document.text) },
                 toggleInspector: { showsDiagramInspector.toggle() },
                 isInspectorShown: showsDiagramInspector,
+                canCopyImage: canCopyImage,
                 canPublish: canPublish
             )
         )
@@ -87,10 +92,16 @@ struct DocumentWorkspace: View {
                 onRename: { renameTarget = $0 }
             )
         }
-        .alert("Unable to update diagram", isPresented: actionErrorIsPresented) {
+        .alert(actionErrorTitle, isPresented: actionErrorIsPresented) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(actionErrorMessage ?? "")
+        }
+        .onAppear {
+            dismissWindow(id: "welcome")
+        }
+        .onDisappear {
+            copyFeedbackTask?.cancel()
         }
     }
 
@@ -112,26 +123,15 @@ struct DocumentWorkspace: View {
     }
 
     private var editorPane: some View {
-        ZStack {
-            MermaidTextEditor(
-                text: $document.text,
-                errorLine: renderStore.error?.line,
-                navigateToLine: navigateToLine,
-                command: $editorCommand,
-                fontName: editorFontName,
-                fontSize: editorFontSize,
-                wrapsLines: wrapsLines
-            )
-
-            if showsTemplateGallery,
-               document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                TemplateGallery { template in
-                    document.text = template.source
-                } onStartBlank: {
-                    showsTemplateGallery = false
-                }
-            }
-        }
+        MermaidTextEditor(
+            text: $document.text,
+            errorLine: renderStore.error?.line,
+            navigateToLine: navigateToLine,
+            command: $editorCommand,
+            fontName: editorFontName,
+            fontSize: editorFontSize,
+            wrapsLines: wrapsLines
+        )
         .background(.background)
     }
 
@@ -141,6 +141,16 @@ struct DocumentWorkspace: View {
             MermaidPreviewWebView(code: document.text, theme: theme, store: renderStore)
 
             VStack {
+                if showsImageCopied {
+                    Label("Image copied", systemImage: "checkmark.circle.fill")
+                        .font(.callout.weight(.medium))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .background(.regularMaterial, in: Capsule())
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .padding(.top, 14)
+                }
+
                 Spacer()
                 if (renderStore.info != nil && renderStore.error == nil) || renderStore.isRendering {
                     HStack(spacing: 8) {
@@ -166,6 +176,10 @@ struct DocumentWorkspace: View {
         }
         .clipped()
         .accessibilityLabel("Diagram preview")
+        .contextMenu {
+            Button("Copy Image", action: copyImage)
+                .disabled(!canCopyImage)
+        }
     }
 
     @ToolbarContentBuilder
@@ -246,6 +260,13 @@ struct DocumentWorkspace: View {
         }
 
         ToolbarItem {
+            Button(action: copyImage) {
+                Label("Copy Image", systemImage: "photo.on.rectangle.angled")
+            }
+            .disabled(!canCopyImage)
+        }
+
+        ToolbarItem {
             Button {
                 showsExportPanel = true
             } label: {
@@ -269,6 +290,10 @@ struct DocumentWorkspace: View {
 
     private var canPublish: Bool {
         renderStore.canPublish(code: document.text, theme: theme)
+    }
+
+    private var canCopyImage: Bool {
+        renderStore.lastSVG != nil && renderStore.lastSuccessfulTheme != nil
     }
 
     private var actionErrorIsPresented: Binding<Bool> {
@@ -304,8 +329,31 @@ struct DocumentWorkspace: View {
                     actionName: String(localized: "Rename Diagram Identifier")
                 )
             } catch {
+                actionErrorTitle = String(localized: "Unable to update diagram")
                 actionErrorMessage = error.localizedDescription
             }
+        }
+    }
+
+    private func copyImage() {
+        guard let svg = renderStore.lastSVG,
+              let renderedTheme = renderStore.lastSuccessfulTheme else { return }
+        do {
+            try ExportService.copyImageForSharing(svg, theme: renderedTheme)
+            copyFeedbackTask?.cancel()
+            withAnimation(.snappy) {
+                showsImageCopied = true
+            }
+            copyFeedbackTask = Task { @MainActor in
+                try? await Task.sleep(for: .seconds(1.6))
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeOut(duration: 0.2)) {
+                    showsImageCopied = false
+                }
+            }
+        } catch {
+            actionErrorTitle = String(localized: "Unable to copy image")
+            actionErrorMessage = error.localizedDescription
         }
     }
 }

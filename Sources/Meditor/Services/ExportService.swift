@@ -55,6 +55,14 @@ enum ExportService {
         }
     }
 
+    static func copyImageForSharing(_ svg: String, theme: MermaidTheme) throws {
+        try copyImage(svg, scale: .two, background: sharingBackground(for: theme))
+    }
+
+    static func sharingBackground(for theme: MermaidTheme) -> ExportBackground {
+        theme == .dark ? .dark : .light
+    }
+
     static func data(
         svg: String,
         format: ExportFormat,

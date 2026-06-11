@@ -41,7 +41,7 @@ for window in windows where window[kCGWindowOwnerName as String] as? String == "
 
 capture() {
   local name="$1"
-  sleep 2
+  sleep 5
   local id
   id="$(window_id)"
   if [[ -z "$id" ]]; then
@@ -63,9 +63,13 @@ launch() {
   local source="${1:-}"
   pkill -x Meditor >/dev/null 2>&1 || true
   if [[ -n "$source" ]]; then
-    /usr/bin/open -n "$APP" "$source" --args -AppleLanguages "($APPLE_LANGUAGE)"
+    /usr/bin/open -n "$APP" "$source" --args \
+      -AppleLanguages "($APPLE_LANGUAGE)" \
+      -ApplePersistenceIgnoreState YES
   else
-    /usr/bin/open -n "$APP" --args -AppleLanguages "($APPLE_LANGUAGE)"
+    /usr/bin/open -n "$APP" --args \
+      -AppleLanguages "($APPLE_LANGUAGE)" \
+      -ApplePersistenceIgnoreState YES
   fi
   sleep 2
   osascript -e 'tell application "System Events" to tell process "Meditor" to set size of window 1 to {1440, 900}' >/dev/null
@@ -81,7 +85,9 @@ for source in flowchart sequence architecture; do
   index=$((index + 1))
 done
 
-osascript -e 'tell application "System Events" to keystroke "3" using {command down, option down}' >/dev/null
+osascript \
+  -e 'tell application "Meditor" to activate' \
+  -e 'tell application "System Events" to keystroke "3" using {command down, option down}' >/dev/null
 capture "05-architecture-preview"
 
 echo "Screenshots prepared in $OUTPUT. Review all images before upload."
