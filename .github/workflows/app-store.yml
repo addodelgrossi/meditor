@@ -20,7 +20,6 @@ jobs:
     env:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      APP_STORE_CONNECT_API_KEY_PATH: ${{ runner.temp }}/app-store-connect-api-key.p8
 
     steps:
       - uses: actions/checkout@v4
@@ -51,8 +50,10 @@ jobs:
             fi
           done
 
-          printf '%s' "$APP_STORE_CONNECT_API_KEY_P8" >"$APP_STORE_CONNECT_API_KEY_PATH"
-          chmod 600 "$APP_STORE_CONNECT_API_KEY_PATH"
+          key_path="$RUNNER_TEMP/app-store-connect-api-key.p8"
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_P8" >"$key_path"
+          chmod 600 "$key_path"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=$key_path" >>"$GITHUB_ENV"
 
       - name: Install XcodeGen
         run: brew install xcodegen
