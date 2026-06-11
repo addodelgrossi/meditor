@@ -53,7 +53,7 @@ enum AppAppearance: String, CaseIterable, Identifiable {
     }
 }
 
-enum MermaidTheme: String, CaseIterable, Identifiable {
+enum MermaidTheme: String, CaseIterable, Codable, Hashable, Identifiable {
     case `default`
     case neutral
     case dark
@@ -103,4 +103,73 @@ enum ExportFormat: String, CaseIterable, Identifiable {
     var id: Self { self }
     var fileExtension: String { rawValue }
     var label: String { rawValue.uppercased() }
+}
+
+enum ExportThemePreset: String, CaseIterable, Identifiable {
+    case current
+    case light
+    case dark
+
+    var id: Self { self }
+
+    var label: LocalizedStringKey {
+        switch self {
+        case .current: "Current"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    func resolved(currentTheme: MermaidTheme) -> MermaidTheme {
+        switch self {
+        case .current: currentTheme
+        case .light: .default
+        case .dark: .dark
+        }
+    }
+}
+
+enum ExportBackground: String, CaseIterable, Identifiable {
+    case transparent
+    case light
+    case dark
+
+    var id: Self { self }
+
+    var label: LocalizedStringKey {
+        switch self {
+        case .transparent: "Transparent"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    static func resolved(_ rawValue: String?, legacyTransparent: Bool) -> Self {
+        if let rawValue, let background = Self(rawValue: rawValue) {
+            return background
+        }
+        return legacyTransparent ? .transparent : .light
+    }
+}
+
+enum RenderPurpose {
+    case editor
+    case export
+    case presentation
+
+    var interactive: Bool {
+        self != .export
+    }
+
+    var highlightable: Bool {
+        self == .presentation
+    }
+
+    var clearOnError: Bool {
+        self != .editor
+    }
+
+    var fitAfterRender: Bool {
+        self != .editor
+    }
 }

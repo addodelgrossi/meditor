@@ -9,8 +9,9 @@ DESTAQUES
 • Prévia offline ao vivo com movimento, zoom, temas e recuperação da última prévia válida
 • Destaque de sintaxe, números de linha, sugestões e navegação para erros
 • Modelos para fluxogramas, sequências, classes, estados, entidade-relacionamento, Gantt, mapas mentais e arquitetura
-• Exportação para SVG, PNG e PDF
-• Cópia de SVG ou PNG diretamente para a área de transferência
+• Exportação rica para SVG, PNG retina e PDF com controles de tema e fundo
+• Área de transferência inteligente para Slack, Notion, Keynote e outros apps
+• Apresentações em tela cheia com múltiplos arquivos e destaque de nós ao clicar
 • Interface em inglês e português brasileiro
 
 O Meditor armazena o código dos diagramas como texto simples. A renderização acontece localmente e o conteúdo dos documentos nunca deixa o dispositivo.

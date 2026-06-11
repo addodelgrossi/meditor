@@ -5,9 +5,10 @@ struct MermaidPreviewWebView: NSViewRepresentable {
     let code: String
     let theme: MermaidTheme
     let store: RenderStore
+    var onInteraction: (() -> Void)?
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(store: store)
+        Coordinator(store: store, onInteraction: onInteraction)
     }
 
     func makeNSView(context: Context) -> WKWebView {
@@ -40,9 +41,11 @@ struct MermaidPreviewWebView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
         private weak var store: RenderStore?
+        private let onInteraction: (() -> Void)?
 
-        init(store: RenderStore) {
+        init(store: RenderStore, onInteraction: (() -> Void)?) {
             self.store = store
+            self.onInteraction = onInteraction
         }
 
         func userContentController(
@@ -53,6 +56,8 @@ struct MermaidPreviewWebView: NSViewRepresentable {
             Task { @MainActor [weak self] in
                 if payload["event"] as? String == "ready" {
                     self?.store?.webViewDidBecomeReady()
+                } else if payload["event"] as? String == "interaction" {
+                    self?.onInteraction?()
                 } else {
                     self?.store?.handle(message: payload)
                 }

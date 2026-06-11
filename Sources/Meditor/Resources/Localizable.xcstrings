@@ -335,6 +335,90 @@
       "localizations" : {
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reduzir" } }
       }
+    },
+    "Add Files…" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Adicionar arquivos…" } } }
+    },
+    "Add Mermaid files to build a presentation." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Adicione arquivos Mermaid para montar uma apresentação." } } }
+    },
+    "Background" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Fundo" } } }
+    },
+    "Build Presentation" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Montar apresentação" } } }
+    },
+    "Cancel" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cancelar" } } }
+    },
+    "Copy Image" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar imagem" } } }
+    },
+    "Copy Image includes SVG, PDF, PNG, and TIFF so each destination can choose its preferred representation." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar imagem inclui SVG, PDF, PNG e TIFF para que cada destino escolha a representação preferida." } } }
+    },
+    "Copy SVG as Text" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Copiar SVG como texto" } } }
+    },
+    "Current" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atual" } } }
+    },
+    "Default export background" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Fundo padrão de exportação" } } }
+    },
+    "Drag rows to reorder. Files are read once when added." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste as linhas para reordenar. Os arquivos são lidos uma vez ao serem adicionados." } } }
+    },
+    "End Presentation" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Encerrar apresentação" } } }
+    },
+    "Export preview" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Pré-visualização da exportação" } } }
+    },
+    "Export theme" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tema da exportação" } } }
+    },
+    "Export…" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Exportar…" } } }
+    },
+    "Format" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Formato" } } }
+    },
+    "Image scale" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escala da imagem" } } }
+    },
+    "Next slide" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Próximo slide" } } }
+    },
+    "No slides yet" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum slide ainda" } } }
+    },
+    "Present" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Apresentar" } } }
+    },
+    "Presentation" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Apresentação" } } }
+    },
+    "Previous slide" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Slide anterior" } } }
+    },
+    "Start Presentation" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar apresentação" } } }
+    },
+    "Start Presentation…" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar apresentação…" } } }
+    },
+    "The image could not be copied." : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível copiar a imagem." } } }
+    },
+    "Transparent" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Transparente" } } }
+    },
+    "Unable to add files" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível adicionar os arquivos" } } }
+    },
+    "Untitled Diagram" : {
+      "localizations" : { "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Diagrama sem título" } } }
     }
   },
   "version" : "1.0"

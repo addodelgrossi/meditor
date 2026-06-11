@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 import XCTest
 @testable import Meditor
 
@@ -50,7 +51,7 @@ final class MeditorCoreTests: XCTestCase {
             svg: svg,
             format: .png,
             scale: .one,
-            transparentBackground: false
+            background: .light
         )
         let pdfData = try ExportService.data(svg: svg, format: .pdf, scale: .one)
 
@@ -58,7 +59,104 @@ final class MeditorCoreTests: XCTestCase {
         XCTAssertEqual(Array(pngData.prefix(8)), [137, 80, 78, 71, 13, 10, 26, 10])
         XCTAssertEqual(NSBitmapImageRep(data: pngData)?.colorAt(x: 0, y: 0)?.alphaComponent, 0)
         XCTAssertEqual(NSBitmapImageRep(data: opaquePNGData)?.colorAt(x: 0, y: 0)?.alphaComponent, 1)
+        XCTAssertEqual(NSBitmapImageRep(data: pngData)?.pixelsWide, 240)
+        XCTAssertEqual(NSBitmapImageRep(data: pngData)?.pixelsHigh, 160)
         XCTAssertTrue(String(data: pdfData.prefix(4), encoding: .ascii) == "%PDF")
+    }
+
+    @MainActor
+    func testExportAppliesLightAndDarkBackgroundsToRasterAndSVG() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 20 10">
+          <circle cx="10" cy="5" r="2" fill="#39d1d8"/>
+        </svg>
+        """
+
+        let lightPNG = try ExportService.data(svg: svg, format: .png, scale: .one, background: .light)
+        let darkPNG = try ExportService.data(svg: svg, format: .png, scale: .one, background: .dark)
+        let lightSVG = try ExportService.data(svg: svg, format: .svg, scale: .one, background: .light)
+        let darkSVG = try ExportService.data(svg: svg, format: .svg, scale: .one, background: .dark)
+
+        let lightPixel = try XCTUnwrap(NSBitmapImageRep(data: lightPNG)?.colorAt(x: 0, y: 0))
+        XCTAssertEqual(lightPixel.redComponent, 1, accuracy: 0.01)
+        XCTAssertEqual(lightPixel.greenComponent, 1, accuracy: 0.01)
+        XCTAssertEqual(lightPixel.blueComponent, 1, accuracy: 0.01)
+        let darkPixel = try XCTUnwrap(NSBitmapImageRep(data: darkPNG)?.colorAt(x: 0, y: 0))
+        XCTAssertEqual(darkPixel.redComponent, 0x11 / 255, accuracy: 0.01)
+        XCTAssertEqual(darkPixel.greenComponent, 0x13 / 255, accuracy: 0.01)
+        XCTAssertEqual(darkPixel.blueComponent, 0x18 / 255, accuracy: 0.01)
+        XCTAssertTrue(String(decoding: lightSVG, as: UTF8.self).contains("fill=\"#FFFFFF\""))
+        XCTAssertTrue(String(decoding: darkSVG, as: UTF8.self).contains("fill=\"#111318\""))
+    }
+
+    @MainActor
+    func testCopyImagePublishesRichImageRepresentationsWithoutText() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 20 10">
+          <rect width="20" height="10" fill="#39d1d8"/>
+        </svg>
+        """
+
+        try ExportService.copyImage(svg, scale: .two, background: .transparent)
+
+        let types = try XCTUnwrap(NSPasteboard.general.pasteboardItems?.first?.types)
+        XCTAssertTrue(types.contains(.png))
+        XCTAssertTrue(types.contains(.tiff))
+        XCTAssertTrue(types.contains(.pdf))
+        XCTAssertTrue(types.contains(NSPasteboard.PasteboardType(UTType.svg.identifier)))
+        XCTAssertFalse(types.contains(.string))
+    }
+
+    func testExportThemePresetsAndLegacyBackgroundMigration() {
+        XCTAssertEqual(ExportThemePreset.current.resolved(currentTheme: .forest), .forest)
+        XCTAssertEqual(ExportThemePreset.light.resolved(currentTheme: .forest), .default)
+        XCTAssertEqual(ExportThemePreset.dark.resolved(currentTheme: .forest), .dark)
+        XCTAssertEqual(ExportBackground.resolved(nil, legacyTransparent: true), .transparent)
+        XCTAssertEqual(ExportBackground.resolved(nil, legacyTransparent: false), .light)
+        XCTAssertEqual(ExportBackground.resolved("dark", legacyTransparent: true), .dark)
+    }
+
+    func testPresentationPositionStopsAtDeckBoundaries() {
+        var position = PresentationPosition(count: 2)
+
+        position.goPrevious()
+        XCTAssertEqual(position.index, 0)
+        position.goNext()
+        position.goNext()
+        XCTAssertEqual(position.index, 1)
+        XCTAssertFalse(position.canGoNext)
+        XCTAssertTrue(position.canGoPrevious)
+    }
+
+    func testPresentationDeckMovesAndRemovesSlides() {
+        var deck = PresentationDeck(
+            slides: [
+                PresentationSlide(title: "A", code: "flowchart LR\nA"),
+                PresentationSlide(title: "B", code: "flowchart LR\nB"),
+                PresentationSlide(title: "C", code: "flowchart LR\nC"),
+            ],
+            theme: .dark
+        )
+
+        deck.move(from: IndexSet(integer: 0), to: 3)
+        XCTAssertEqual(deck.slides.map(\.title), ["B", "C", "A"])
+        deck.remove(at: IndexSet(integer: 1))
+        XCTAssertEqual(deck.slides.map(\.title), ["B", "A"])
+    }
+
+    func testPresentationDeckLoaderReadsFilesOnce() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("Architecture.mmd")
+        try Data("flowchart LR\nA-->B".utf8).write(to: url)
+
+        let slides = try PresentationDeckLoader.slides(from: [url])
+        try Data("flowchart LR\nA-->C".utf8).write(to: url)
+
+        XCTAssertEqual(slides.first?.title, "Architecture")
+        XCTAssertEqual(slides.first?.code, "flowchart LR\nA-->B")
     }
 
     @MainActor

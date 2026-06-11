@@ -3,7 +3,8 @@ import SwiftUI
 struct WorkspaceActions {
     let setMode: (WorkspaceMode) -> Void
     let fitPreview: () -> Void
-    let exportSVG: () -> Void
+    let export: () -> Void
+    let startPresentation: () -> Void
     let publish: () -> Void
     let canPublish: Bool
 }
@@ -61,11 +62,17 @@ struct MeditorCommands: Commands {
             }
             .keyboardShortcut("0", modifiers: [.command])
 
-            Button("Export SVG") {
-                actions?.exportSVG()
+            Divider()
+
+            Button("Export…") {
+                actions?.export()
             }
             .keyboardShortcut("e", modifiers: [.command, .shift])
 
+            Button("Start Presentation…") {
+                actions?.startPresentation()
+            }
+            .keyboardShortcut(.return, modifiers: [.command, .shift])
         }
     }
 }

@@ -4,8 +4,9 @@ To review the main workflow:
 1. Launch the app and choose any built-in template.
 2. Edit Mermaid source in the left pane and verify the live preview on the right.
 3. Use the layout selector to switch between editor, split, and preview modes.
-4. Use Export to save SVG, PNG, or PDF through the standard macOS save panel.
-5. Open Settings to review editor/export preferences and the About & Legal section.
-6. In Finder, select any .mmd or .mermaid file associated with Meditor and press Space to verify the rendered Quick Look preview. Invalid or empty files display their source instead.
+4. Use Export to preview and save SVG, retina PNG, or PDF, or copy a rich image to the clipboard.
+5. Use Present to build a temporary multi-file deck and enter a full-screen presentation.
+6. Open Settings to review editor/export preferences and the About & Legal section.
+7. In Finder, select any .mmd or .mermaid file associated with Meditor and press Space to verify the rendered Quick Look preview. Invalid or empty files display their source instead.
 
 All Mermaid rendering, including the Quick Look extension, is performed locally using the bundled JavaScript resource. WKWebView requires the network client entitlement for its sandboxed helper process, but the renderer has a Content Security Policy with connect-src 'none' and navigation is restricted to local file/about URLs. The app and extension make no network requests and do not transmit document content.

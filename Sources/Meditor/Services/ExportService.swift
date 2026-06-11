@@ -7,7 +7,7 @@ enum ExportService {
         svg: String,
         format: ExportFormat,
         scale: ExportScale,
-        transparentBackground: Bool = true,
+        background: ExportBackground,
         suggestedName: String = "Diagram"
     ) throws {
         let panel = NSSavePanel()
@@ -20,40 +20,70 @@ enum ExportService {
             svg: svg,
             format: format,
             scale: scale,
-            transparentBackground: transparentBackground
+            background: background
         )
         try data.write(to: url, options: .atomic)
     }
 
-    static func copySVG(_ svg: String) {
+    static func copySVGText(_ svg: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(svg, forType: .string)
     }
 
-    static func copyPNG(_ svg: String, scale: ExportScale, transparentBackground: Bool = true) throws {
-        let data = try pngData(svg: svg, scale: scale, transparentBackground: transparentBackground)
+    static func copyImage(_ svg: String, scale: ExportScale, background: ExportBackground) throws {
+        let png = try pngData(svg: svg, scale: scale, background: background)
+        let pdf = try pdfData(svg: svg, background: background)
+        let svgData = try svgData(svg: svg, background: background)
+        guard let image = NSImage(data: png), let tiff = image.tiffRepresentation else {
+            throw ExportError.rasterizationFailed
+        }
+
+        let item = NSPasteboardItem()
+        item.setData(png, forType: .png)
+        item.setData(tiff, forType: .tiff)
+        item.setData(pdf, forType: .pdf)
+        item.setData(svgData, forType: NSPasteboard.PasteboardType(UTType.svg.identifier))
+
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setData(data, forType: .png)
+        guard NSPasteboard.general.writeObjects([item]) else {
+            throw ExportError.clipboardWriteFailed
+        }
     }
 
     static func data(
         svg: String,
         format: ExportFormat,
         scale: ExportScale,
-        transparentBackground: Bool = true
+        background: ExportBackground = .transparent
     ) throws -> Data {
         switch format {
         case .svg:
-            guard let data = svg.data(using: .utf8) else { throw ExportError.invalidSVG }
-            return data
+            return try svgData(svg: svg, background: background)
         case .png:
-            return try pngData(svg: svg, scale: scale, transparentBackground: transparentBackground)
+            return try pngData(svg: svg, scale: scale, background: background)
         case .pdf:
-            return try pdfData(svg: svg)
+            return try pdfData(svg: svg, background: background)
         }
     }
 
-    private static func pngData(svg: String, scale: ExportScale, transparentBackground: Bool) throws -> Data {
+    private static func svgData(svg: String, background: ExportBackground) throws -> Data {
+        let output: String
+        if let color = background.svgColor {
+            guard let openingTagEnd = svg.firstIndex(of: ">") else {
+                throw ExportError.invalidSVG
+            }
+            let rectangle = #"<rect width="100%" height="100%" fill="\#(color)"/>"#
+            output = String(svg[...openingTagEnd]) + rectangle + String(svg[svg.index(after: openingTagEnd)...])
+        } else {
+            output = svg
+        }
+        guard let data = output.data(using: .utf8) else {
+            throw ExportError.invalidSVG
+        }
+        return data
+    }
+
+    private static func pngData(svg: String, scale: ExportScale, background: ExportBackground) throws -> Data {
         let image = try image(from: svg)
         let width = max(Int(image.size.width * Double(scale.rawValue)), 1)
         let height = max(Int(image.size.height * Double(scale.rawValue)), 1)
@@ -75,7 +105,7 @@ enum ExportService {
         bitmap.size = image.size
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
-        (transparentBackground ? NSColor.clear : NSColor.white).setFill()
+        background.nsColor.setFill()
         NSRect(origin: .zero, size: image.size).fill()
         image.draw(in: NSRect(origin: .zero, size: image.size))
         NSGraphicsContext.restoreGraphicsState()
@@ -86,10 +116,11 @@ enum ExportService {
         return data
     }
 
-    private static func pdfData(svg: String) throws -> Data {
+    private static func pdfData(svg: String, background: ExportBackground) throws -> Data {
         let image = try image(from: svg)
         let view = ExportImageView(frame: NSRect(origin: .zero, size: image.size))
         view.image = image
+        view.background = background.nsColor
         return view.dataWithPDF(inside: view.bounds)
     }
 
@@ -111,11 +142,13 @@ enum ExportService {
     enum ExportError: LocalizedError {
         case invalidSVG
         case rasterizationFailed
+        case clipboardWriteFailed
 
         var errorDescription: String? {
             switch self {
             case .invalidSVG: String(localized: "The diagram could not be converted.")
             case .rasterizationFailed: String(localized: "The image could not be created.")
+            case .clipboardWriteFailed: String(localized: "The image could not be copied.")
             }
         }
     }
@@ -123,9 +156,30 @@ enum ExportService {
 
 private final class ExportImageView: NSView {
     var image: NSImage?
+    var background = NSColor.clear
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+        background.setFill()
+        bounds.fill()
         image?.draw(in: bounds)
+    }
+}
+
+private extension ExportBackground {
+    var nsColor: NSColor {
+        switch self {
+        case .transparent: .clear
+        case .light: .white
+        case .dark: NSColor(srgbRed: 0x11 / 255, green: 0x13 / 255, blue: 0x18 / 255, alpha: 1)
+        }
+    }
+
+    var svgColor: String? {
+        switch self {
+        case .transparent: nil
+        case .light: "#FFFFFF"
+        case .dark: "#111318"
+        }
     }
 }

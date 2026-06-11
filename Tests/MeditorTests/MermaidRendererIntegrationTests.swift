@@ -70,6 +70,45 @@ final class MermaidRendererIntegrationTests: XCTestCase {
         }
     }
 
+    func testPresentationModeFindsAndHighlightsTargetsInEveryTemplate() async throws {
+        let (webView, inbox) = try makeRenderer()
+        _ = await inbox.nextMessage()
+
+        for (index, template) in MermaidTemplate.all.enumerated() {
+            try render(
+                template.source,
+                id: index + 1,
+                in: webView,
+                options: ["highlightable": true, "fitAfterRender": true]
+            )
+            let message = await inbox.nextMessage()
+            XCTAssertEqual(message["success"] as? Bool, true, "\(template.id): \(message)")
+
+            let counts = try await highlightFirstTarget(in: webView)
+            XCTAssertGreaterThan(counts.targetCount, 0, "\(template.id) should expose a highlight target")
+            XCTAssertEqual(counts.highlightedCount, 1, "\(template.id) should highlight one target")
+        }
+    }
+
+    func testPresentationModeClearsCanvasAfterInvalidSlide() async throws {
+        let (webView, inbox) = try makeRenderer()
+        _ = await inbox.nextMessage()
+
+        try render("flowchart LR\nA --> B", id: 1, in: webView)
+        _ = await inbox.nextMessage()
+        try render(
+            "flowchart LR\nA -->",
+            id: 2,
+            in: webView,
+            options: ["clearOnError": true]
+        )
+        let invalidMessage = await inbox.nextMessage()
+        let afterErrorHTML = try await diagramHTML(in: webView)
+
+        XCTAssertEqual(invalidMessage["success"] as? Bool, false)
+        XCTAssertTrue(afterErrorHTML.isEmpty)
+    }
+
     private func makeRenderer() throws -> (WKWebView, MessageInbox) {
         let url = try XCTUnwrap(RendererResources.htmlURL)
         let inbox = MessageInbox()
@@ -81,8 +120,14 @@ final class MermaidRendererIntegrationTests: XCTestCase {
         return (webView, inbox)
     }
 
-    private func render(_ source: String, id: Int, in webView: WKWebView) throws {
-        let payload: [String: Any] = ["id": id, "code": source, "theme": "default"]
+    private func render(
+        _ source: String,
+        id: Int,
+        in webView: WKWebView,
+        options: [String: Any] = [:]
+    ) throws {
+        var payload: [String: Any] = ["id": id, "code": source, "theme": "default"]
+        payload.merge(options) { _, new in new }
         let data = try JSONSerialization.data(withJSONObject: payload)
         let json = try XCTUnwrap(String(data: data, encoding: .utf8))
         webView.evaluateJavaScript("window.Meditor.render(\(json))")
@@ -131,6 +176,33 @@ final class MermaidRendererIntegrationTests: XCTestCase {
         }
     }
 
+    private func highlightFirstTarget(in webView: WKWebView) async throws -> HighlightCounts {
+        let json: String = try await withCheckedThrowingContinuation { continuation in
+            webView.evaluateJavaScript(
+                """
+                (() => {
+                  const target = document.querySelector(".meditor-highlight-target");
+                  if (target) {
+                    target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+                    target.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+                  }
+                  return JSON.stringify({
+                    targetCount: document.querySelectorAll(".meditor-highlight-target").length,
+                    highlightedCount: document.querySelectorAll(".meditor-highlighted").length
+                  });
+                })()
+                """
+            ) { value, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: value as? String ?? "{}")
+                }
+            }
+        }
+        return try JSONDecoder().decode(HighlightCounts.self, from: Data(json.utf8))
+    }
+
     private static let largeFlowchart = """
     flowchart TB
       subgraph HAVE["✅ Já entregue (consumível)"]
@@ -157,6 +229,11 @@ final class MermaidRendererIntegrationTests: XCTestCase {
       COL --> ALM --> GATE
       GATE --> MW
     """
+}
+
+private struct HighlightCounts: Codable {
+    let targetCount: Int
+    let highlightedCount: Int
 }
 
 private struct RendererMetrics: Codable, Sendable {

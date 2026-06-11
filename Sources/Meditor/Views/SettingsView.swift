@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("wrapLines") private var wrapsLines = false
     @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
     @AppStorage("transparentExport") private var transparentExport = true
+    @AppStorage("defaultExportBackground") private var exportBackgroundRaw = ""
     @AppStorage("shareBaseURL") private var shareBaseURL = "https://meditor.dev"
     @State private var shareBaseURLDraft = UserDefaults.standard.string(forKey: "shareBaseURL")
         ?? ShareServiceURL.defaultValue
@@ -55,7 +56,11 @@ struct SettingsView: View {
                         Text(scale.label).tag(scale.rawValue)
                     }
                 }
-                Toggle("Transparent background when possible", isOn: $transparentExport)
+                Picker("Default export background", selection: exportBackground) {
+                    ForEach(ExportBackground.allCases) { background in
+                        Text(background.label).tag(background)
+                    }
+                }
             }
 
             Section("Publish") {
@@ -99,6 +104,13 @@ struct SettingsView: View {
         Binding(
             get: { AppAppearance.resolved(appAppearanceRaw) },
             set: { appAppearanceRaw = $0.rawValue }
+        )
+    }
+
+    private var exportBackground: Binding<ExportBackground> {
+        Binding(
+            get: { ExportBackground.resolved(exportBackgroundRaw, legacyTransparent: transparentExport) },
+            set: { exportBackgroundRaw = $0.rawValue }
         )
     }
 }

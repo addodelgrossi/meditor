@@ -37,7 +37,9 @@ flowchart LR
 - TextKit editor with syntax highlighting, line numbers, completion, and inline errors
 - Crisp offline preview with pan, zoom, themes, and last-valid-preview recovery
 - Templates for flowcharts, sequences, classes, states, ER, Gantt, mindmaps, and architecture
-- SVG, PNG, and PDF export, plus clipboard support
+- Rich SVG, retina PNG, and PDF export with theme and background controls
+- Smart image clipboard with SVG, PDF, PNG, and TIFF representations
+- Full-screen presentations with temporary multi-file decks, slide navigation, and node highlighting
 - Publish a view-only link with auto-expiry and a social preview (powered by
   [meditor-cloud](https://github.com/addodelgrossi/meditor-cloud)); manage or
   unpublish your links from the Diagram menu
@@ -64,7 +66,19 @@ The generated application is placed at `dist/Meditor.app`.
 | Zoom | Toolbar controls or `Command` + scroll |
 | Fit diagram | Double-click the canvas or press `Command + 0` |
 | Switch layout | `Command + Option + 1`, `2`, or `3` |
-| Export SVG | `Command + Shift + E` |
+| Export or copy image | `Command + Shift + E` |
+| Build presentation | `Command + Shift + Return` |
+
+## Presentation Controls
+
+| Action | Control |
+| --- | --- |
+| Previous / next slide | Arrow keys, or `Space` to advance |
+| Highlight a node | Click the node |
+| Clear node highlight | Click the canvas |
+| Zoom | `+` / `-`, toolbar controls, or `Command` + scroll |
+| Fit diagram | `0` or double-click the canvas |
+| End presentation | `Escape` |
 
 ## Development
 

@@ -18,7 +18,7 @@
       top: 50%;
       transform-origin: 0 0;
       will-change: transform, width, height;
-      transition: opacity 140ms ease;
+      transition: opacity 160ms ease;
     }
     #diagram svg {
       display: block;
@@ -28,6 +28,13 @@
       overflow: visible;
       shape-rendering: geometricPrecision;
       text-rendering: optimizeLegibility;
+    }
+    #diagram .meditor-highlight-target { transition: opacity 160ms ease, filter 160ms ease; }
+    body.presentation #diagram { transition: opacity 160ms ease, width 120ms ease, height 120ms ease; }
+    #diagram.meditor-has-highlight .meditor-highlight-target { opacity: 0.22; }
+    #diagram.meditor-has-highlight .meditor-highlighted {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px rgba(82, 210, 220, 0.8));
     }
   </style>
 </head>
@@ -47,14 +54,56 @@
       let naturalHeight = 0;
       let hasRendered = false;
       let interactive = true;
+      let highlightSelector = [
+        "g.node", "g.cluster", ".actor", "g[class*='participant']",
+        "g[class*='classGroup']", "g[class*='stateGroup']", "g[class*='entityBox']",
+        ".task", "g.mindmap-node", "g[class*='architecture']",
+        "g[class*='service']", "g[class*='wardley-node']"
+      ].join(",");
+      let highlightable = false;
+      let movedSincePointerDown = false;
+      let transformFrame = null;
+      let lastInteractionPost = 0;
 
       const post = payload => window.webkit.messageHandlers.meditor.postMessage(payload);
+      const postInteraction = () => {
+        const now = Date.now();
+        if (highlightable && now - lastInteractionPost > 250) {
+          lastInteractionPost = now;
+          post({ event: "interaction" });
+        }
+      };
       const transform = () => {
+        transformFrame = null;
         const width = Math.max(naturalWidth * scale, 1);
         const height = Math.max(naturalHeight * scale, 1);
         graph.style.width = `${width}px`;
         graph.style.height = `${height}px`;
         graph.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+      };
+      const scheduleTransform = () => {
+        if (!transformFrame) transformFrame = requestAnimationFrame(transform);
+      };
+      const clearHighlight = () => {
+        graph.classList.remove("meditor-has-highlight");
+        graph.querySelectorAll(".meditor-highlighted").forEach(element => {
+          element.classList.remove("meditor-highlighted");
+        });
+      };
+      const prepareHighlights = () => {
+        graph.querySelectorAll(".meditor-highlight-target").forEach(element => {
+          element.classList.remove("meditor-highlight-target", "meditor-highlighted");
+        });
+        if (!highlightable) return;
+        graph.querySelectorAll(highlightSelector).forEach(element => {
+          element.classList.add("meditor-highlight-target");
+        });
+      };
+      const highlight = element => {
+        clearHighlight();
+        if (!element) return;
+        element.classList.add("meditor-highlighted");
+        graph.classList.add("meditor-has-highlight");
       };
       const dimensions = svg => {
         const box = svg.viewBox && svg.viewBox.baseVal;
@@ -97,7 +146,10 @@
         async render(request) {
           try {
             interactive = request.interactive !== false;
+            highlightable = request.highlightable === true;
             document.body.classList.toggle("static", !interactive);
+            document.body.classList.toggle("presentation", highlightable);
+            graph.style.opacity = "0";
             mermaid.initialize({
               startOnLoad: false,
               securityLevel: "strict",
@@ -121,12 +173,15 @@
             svg.removeAttribute("height");
             svg.style.maxWidth = "none";
             svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-            if (!hasRendered) {
+            clearHighlight();
+            prepareHighlights();
+            if (!hasRendered || request.fitAfterRender === true) {
               fit(1.15);
               hasRendered = true;
             } else {
               transform();
             }
+            requestAnimationFrame(() => { graph.style.opacity = "1"; });
             post({
               id: request.id,
               success: true,
@@ -136,6 +191,7 @@
               height: size.height
             });
           } catch (error) {
+            if (request.clearOnError === true) window.Meditor.clear();
             const location = errorLocation(error);
             post({
               id: request.id,
@@ -154,6 +210,7 @@
           scale = 1;
           offsetX = 0;
           offsetY = 0;
+          clearHighlight();
         },
         zoomBy(factor) {
           scale = Math.max(0.08, Math.min(6, scale * factor));
@@ -162,6 +219,7 @@
         fit() {
           fit(1.15);
         },
+        clearHighlight,
         metrics() {
           const svg = graph.querySelector("svg");
           const rect = svg ? svg.getBoundingClientRect() : null;
@@ -173,13 +231,17 @@
             displayedHeight: rect ? rect.height : 0,
             viewportWidth: window.innerWidth,
             viewportHeight: window.innerHeight,
-            interactive
+            interactive,
+            highlightable,
+            highlightTargetCount: graph.querySelectorAll(".meditor-highlight-target").length,
+            highlightedCount: graph.querySelectorAll(".meditor-highlighted").length
           };
         }
       };
 
       window.addEventListener("wheel", event => {
         if (!interactive) return;
+        postInteraction();
         event.preventDefault();
         if (event.metaKey || event.ctrlKey) {
           const factor = event.deltaY < 0 ? 1.08 : 0.92;
@@ -187,7 +249,7 @@
         } else {
           offsetX -= event.deltaX;
           offsetY -= event.deltaY;
-          transform();
+          scheduleTransform();
         }
       }, { passive: false });
 
@@ -196,20 +258,28 @@
         dragging = true;
         pointerX = event.clientX;
         pointerY = event.clientY;
+        movedSincePointerDown = false;
         document.body.classList.add("dragging");
       });
       window.addEventListener("pointermove", event => {
+        postInteraction();
         if (!interactive || !dragging) return;
-        offsetX += event.clientX - pointerX;
-        offsetY += event.clientY - pointerY;
+        const deltaX = event.clientX - pointerX;
+        const deltaY = event.clientY - pointerY;
+        if (Math.abs(deltaX) + Math.abs(deltaY) > 2) movedSincePointerDown = true;
+        offsetX += deltaX;
+        offsetY += deltaY;
         pointerX = event.clientX;
         pointerY = event.clientY;
-        transform();
+        scheduleTransform();
       });
-      window.addEventListener("pointerup", () => {
+      window.addEventListener("pointerup", event => {
         if (!interactive) return;
         dragging = false;
         document.body.classList.remove("dragging");
+        if (highlightable && !movedSincePointerDown) {
+          highlight(event.target.closest(".meditor-highlight-target"));
+        }
       });
       window.addEventListener("dblclick", () => {
         if (interactive) window.Meditor.fit();

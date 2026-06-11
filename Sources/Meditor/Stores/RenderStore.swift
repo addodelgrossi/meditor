@@ -17,6 +17,11 @@ final class RenderStore: ObservableObject {
     private var lastSignature = ""
     private var pendingCode = ""
     private var pendingTheme = MermaidTheme.default
+    private let purpose: RenderPurpose
+
+    init(purpose: RenderPurpose = .editor) {
+        self.purpose = purpose
+    }
 
     func attach(_ webView: WKWebView) {
         self.webView = webView
@@ -95,6 +100,10 @@ final class RenderStore: ObservableObject {
     }
 
     func canPublish(code: String, theme: MermaidTheme) -> Bool {
+        hasCurrentRender(code: code, theme: theme)
+    }
+
+    func hasCurrentRender(code: String, theme: MermaidTheme) -> Bool {
         !isRendering
             && error == nil
             && lastSVG != nil
@@ -108,7 +117,11 @@ final class RenderStore: ObservableObject {
         let payload: [String: Any] = [
             "id": requestID,
             "code": pendingCode,
-            "theme": pendingTheme.mermaidValue
+            "theme": pendingTheme.mermaidValue,
+            "interactive": purpose.interactive,
+            "highlightable": purpose.highlightable,
+            "clearOnError": purpose.clearOnError,
+            "fitAfterRender": purpose.fitAfterRender,
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: payload),
               let json = String(data: data, encoding: .utf8) else { return }

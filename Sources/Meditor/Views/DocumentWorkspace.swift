@@ -2,20 +2,20 @@ import SwiftUI
 
 struct DocumentWorkspace: View {
     @Binding var document: MermaidDocument
+    let fileURL: URL?
+
     @StateObject private var renderStore = RenderStore()
     @State private var mode = WorkspaceMode.split
     @State private var theme = AppPreferences.shared.defaultTheme
     @State private var navigateToLine: Int?
-    @State private var exportErrorMessage: String?
     @State private var showsTemplateGallery = true
     @State private var showsPublishPopover = false
+    @State private var showsExportPanel = false
+    @State private var showsPresentationBuilder = false
 
     @AppStorage("editorFontSize") private var editorFontSize = 14.0
     @AppStorage("editorFontName") private var editorFontName = "SF Mono"
     @AppStorage("wrapLines") private var wrapsLines = false
-    @AppStorage("defaultExportScale") private var exportScaleRaw = ExportScale.two.rawValue
-    @AppStorage("transparentExport") private var transparentExport = true
-
     var body: some View {
         VStack(spacing: 0) {
             if let error = renderStore.error {
@@ -43,15 +43,25 @@ struct DocumentWorkspace: View {
             WorkspaceActions(
                 setMode: { mode = $0 },
                 fitPreview: renderStore.fit,
-                exportSVG: { export(.svg) },
+                export: { showsExportPanel = true },
+                startPresentation: { showsPresentationBuilder = true },
                 publish: { showsPublishPopover = true },
                 canPublish: canPublish
             )
         )
-        .alert("Export failed", isPresented: exportAlertIsPresented) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(exportErrorMessage ?? "")
+        .sheet(isPresented: $showsExportPanel) {
+            ExportPanel(
+                code: document.text,
+                currentTheme: theme,
+                suggestedName: documentTitle
+            )
+        }
+        .sheet(isPresented: $showsPresentationBuilder) {
+            PresentationDeckBuilderView(
+                currentCode: document.text,
+                currentTitle: documentTitle,
+                theme: theme
+            )
         }
     }
 
@@ -184,6 +194,14 @@ struct DocumentWorkspace: View {
 
         ToolbarItem {
             Button {
+                showsPresentationBuilder = true
+            } label: {
+                Label("Present", systemImage: "play.rectangle")
+            }
+        }
+
+        ToolbarItem {
+            Button {
                 showsPublishPopover = true
             } label: {
                 Label("Publish", systemImage: "square.and.arrow.up.on.square")
@@ -198,69 +216,21 @@ struct DocumentWorkspace: View {
         }
 
         ToolbarItem {
-            Menu {
-                Section("Export") {
-                    ForEach(ExportFormat.allCases) { format in
-                        Button(format.label) {
-                            export(format)
-                        }
-                        .disabled(renderStore.lastSVG == nil)
-                    }
-                }
-                Section("Copy") {
-                    Button("Copy SVG") {
-                        guard let svg = renderStore.lastSVG else { return }
-                        ExportService.copySVG(svg)
-                    }
-                    Button("Copy PNG") {
-                        guard let svg = renderStore.lastSVG else { return }
-                        performCatching {
-                            try ExportService.copyPNG(
-                                svg,
-                                scale: exportScale,
-                                transparentBackground: transparentExport
-                            )
-                        }
-                    }
-                }
+            Button {
+                showsExportPanel = true
             } label: {
                 Label("Export", systemImage: "square.and.arrow.up")
             }
+            .disabled(renderStore.lastSVG == nil)
         }
     }
 
-    private var exportScale: ExportScale {
-        ExportScale(rawValue: exportScaleRaw) ?? .two
+    private var documentTitle: String {
+        fileURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Untitled Diagram")
     }
 
     private var canPublish: Bool {
         renderStore.canPublish(code: document.text, theme: theme)
     }
 
-    private var exportAlertIsPresented: Binding<Bool> {
-        Binding(
-            get: { exportErrorMessage != nil },
-            set: { if !$0 { exportErrorMessage = nil } }
-        )
-    }
-
-    private func export(_ format: ExportFormat) {
-        guard let svg = renderStore.lastSVG else { return }
-        performCatching {
-            try ExportService.export(
-                svg: svg,
-                format: format,
-                scale: exportScale,
-                transparentBackground: transparentExport
-            )
-        }
-    }
-
-    private func performCatching(_ action: () throws -> Void) {
-        do {
-            try action()
-        } catch {
-            exportErrorMessage = error.localizedDescription
-        }
-    }
 }
