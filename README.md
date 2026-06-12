@@ -157,10 +157,14 @@ Configure an `app-store-connect` GitHub environment with these secrets:
   Application certificate and private key
 - `DEVELOPER_ID_CERTIFICATE_PASSWORD`: password used to protect the `.p12`
 
-Create an Admin team API key in App Store Connect under **Users and Access >
-Integrations**, and have the Account Holder issue a Developer ID Application
-certificate. Keep both private keys only in the GitHub environment secrets.
-Then publish the next release with:
+For a public repository, configure a required reviewer for the
+`app-store-connect` environment so signing credentials are released only after
+an explicit approval.
+
+Create a least-privilege App Manager team API key in App Store Connect under
+**Users and Access > Integrations**, and have the Account Holder issue a
+Developer ID Application certificate. Keep both private keys only in the
+GitHub environment secrets. Then publish the next release with:
 
 ```bash
 git tag -a v1.1.0 -m "Meditor 1.1.0"

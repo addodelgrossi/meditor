@@ -4,3 +4,12 @@ dist/
 .DS_Store
 *.xcuserstate
 xcuserdata/
+
+# Local signing and App Store credentials
+*.cer
+*.key
+*.mobileprovision
+*.p12
+*.p8
+*.pem
+*.provisionprofile

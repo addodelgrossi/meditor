@@ -74,6 +74,9 @@ record for `com.addodelgrossi.meditor` does not exist yet. Once created, run:
 ## Automated uploads for later versions
 
 - [ ] Create the `app-store-connect` GitHub environment
+- [ ] Add a required reviewer to the environment before storing signing
+  credentials in a public repository
+- [ ] Use a least-privilege App Manager team API key rather than an Admin key
 - [ ] Add `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`,
   and `APP_STORE_CONNECT_API_KEY_P8` as environment secrets
 - [ ] Add a base64-encoded Developer ID Application `.p12` and its password as

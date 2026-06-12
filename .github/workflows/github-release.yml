@@ -12,24 +12,25 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: github-release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Build, notarize, and publish DMG
+  build:
+    name: Build and notarize DMG
     runs-on: macos-26
     environment: app-store-connect
     env:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      GH_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          persist-credentials: false
 
       - name: Select Xcode 26.5
         run: sudo xcode-select --switch /Applications/Xcode_26.5.app/Contents/Developer
@@ -118,11 +119,45 @@ jobs:
       - name: Create and verify notarized DMG
         run: ./script/package_github_release.sh
 
+      - name: Remove signing credentials
+        if: always()
+        run: |
+          security delete-keychain "$DEVELOPER_ID_KEYCHAIN_PATH" 2>/dev/null || true
+          rm -f "$DEVELOPER_ID_CERTIFICATE_PATH" "$APP_STORE_CONNECT_API_KEY_PATH"
+
+      - name: Upload verified release assets
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: github-release-assets
+          path: |
+            dist/Meditor-*.dmg
+            dist/Meditor-*.dmg.sha256
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish GitHub Release
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Download verified release assets
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: github-release-assets
+          path: dist
+
       - name: Publish GitHub Release
-        if: github.event_name == 'push'
         shell: bash
         run: |
-          dmg="dist/Meditor-$MARKETING_VERSION.dmg"
+          version="${GITHUB_REF_NAME#v}"
+          dmg="dist/Meditor-$version.dmg"
           checksum="$dmg.sha256"
 
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
@@ -131,11 +166,5 @@ jobs:
             gh release create "$GITHUB_REF_NAME" "$dmg" "$checksum" \
               --verify-tag \
               --generate-notes \
-              --title "Meditor $MARKETING_VERSION"
+              --title "Meditor $version"
           fi
-
-      - name: Remove signing credentials
-        if: always()
-        run: |
-          security delete-keychain "$DEVELOPER_ID_KEYCHAIN_PATH" 2>/dev/null || true
-          rm -f "$DEVELOPER_ID_CERTIFICATE_PATH" "$APP_STORE_CONNECT_API_KEY_PATH"
