@@ -17,9 +17,27 @@ jq -e . Assets/Assets.xcassets/Contents.json Assets/Assets.xcassets/AppIcon.appi
 test -f LICENSE
 test -f Sources/Meditor/Resources/LICENSE-Meditor.txt
 test -f Sources/Meditor/Resources/Mermaid/LICENSE-mermaid.txt
+test -f README.pt-BR.md
+test -f CONTRIBUTING.md
+test -f RELEASING.md
+test -f docs/index.html
+test -f docs/pt-BR/index.html
 test -f docs/privacy/index.html
+test -f docs/pt-BR/privacy/index.html
 test -f docs/support/index.html
+test -f docs/pt-BR/support/index.html
 test -f docs/assets/quick-look-preview.svg
+test -f docs/assets/quick-look-demo.mp4
+test -f docs/assets/quick-look-demo.jpg
+test -f docs/assets/docs-demo-en.mp4
+test -f docs/assets/docs-demo-en.gif
+test -f docs/assets/docs-demo-en.jpg
+test -f docs/assets/docs-demo-pt-BR.mp4
+test -f docs/assets/docs-demo-pt-BR.gif
+test -f docs/assets/docs-demo-pt-BR.jpg
+test -f docs/assets/workspace-en.webp
+test -f docs/assets/workspace-pt-BR.webp
+test -f docs/assets/social-card.png
 
 rg -q '^PRODUCT_BUNDLE_IDENTIFIER = com\.addodelgrossi\.meditor$' Configuration/Meditor.xcconfig
 rg -q '^MARKETING_VERSION = [0-9]+\.[0-9]+\.[0-9]+$' Configuration/Meditor.xcconfig
@@ -39,8 +57,20 @@ rg -q '<string>com\.addodelgrossi\.meditor\.mermaid</string>' Configuration/Medi
 rg -q '<string>com\.apple\.quicklook\.preview</string>' Configuration/MeditorQuickLook-Info.plist
 rg -q '<key>com\.apple\.security\.files\.user-selected\.read-only</key>' Configuration/MeditorQuickLook.entitlements
 rg -q "connect-src 'none'" Sources/Meditor/Resources/renderer.html
-rg -q 'quick-look-preview\.svg' README.md docs/index.html
-rg -q 'quick-look-demo\.mp4' docs/index.html
+rg -q 'docs-demo-en\.gif' README.md
+rg -q 'docs-demo-pt-BR\.gif' README.pt-BR.md
+rg -q 'releases/latest' README.md README.pt-BR.md docs/index.html docs/pt-BR/index.html
+rg -q 'quick-look-demo\.mp4' docs/index.html docs/pt-BR/index.html
+rg -q '^  version: 1\.1\.0$' AppStore/metadata.yml
+rg -q '^  build: 3$' AppStore/metadata.yml
+rg -q 'explicitly choose Publish' docs/privacy/index.html AppStore/en-US/description.txt
+rg -q 'escolhe explicitamente Publicar' docs/pt-BR/privacy/index.html AppStore/pt-BR/description.txt
+
+if rg -q 'no network-based features|document content never leaves the device|não possui recursos baseados em rede|conteúdo dos documentos nunca deixa o dispositivo' \
+  README.md README.pt-BR.md docs AppStore/en-US AppStore/pt-BR; then
+  echo "Documentation contains an outdated claim that publishing never uses the network" >&2
+  exit 1
+fi
 
 if rg -q 'DevelopmentTeam =|DEVELOPMENT_TEAM = ' \
   Meditor.xcodeproj/project.pbxproj Configuration/Meditor.xcconfig project.yml; then

@@ -1,0 +1,19 @@
+<header class="site-header">
+  <nav class="nav shell" aria-label="{% if page.lang == 'pt-BR' %}Navegação principal{% else %}Main navigation{% endif %}">
+    <a class="brand" href="{{ page.home_path | relative_url }}" aria-label="Meditor">
+      <img src="{{ '/assets/meditor-icon.png' | relative_url }}" alt="">
+      <span>Meditor</span>
+    </a>
+    <div class="nav-links">
+      {% if page.body_class == 'landing' %}
+        <a href="#features">{% if page.lang == 'pt-BR' %}Recursos{% else %}Features{% endif %}</a>
+        <a href="#local-first">Local-first</a>
+      {% endif %}
+      <a href="{{ page.support_path | relative_url }}">{% if page.lang == 'pt-BR' %}Suporte{% else %}Support{% endif %}</a>
+      <a href="https://github.com/addodelgrossi/meditor">GitHub</a>
+      <a class="language-switcher" href="{{ page.alternate_path | relative_url }}" hreflang="{{ page.alternate_lang }}">
+        {{ page.alternate_label }}
+      </a>
+    </div>
+  </nav>
+</header>

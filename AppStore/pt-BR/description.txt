@@ -1,6 +1,6 @@
 Meditor é um editor Mermaid nativo e focado para macOS.
 
-Escreva o código do diagrama em um editor preciso e veja uma prévia nítida ao lado. Tudo funciona localmente, então seus documentos permanecem no Mac e o aplicativo não exige conta nem conexão com a internet.
+Escreva o código do diagrama em um editor preciso e veja uma prévia nítida ao lado. Edição, renderização, Quick Look e exportação funcionam localmente, então o fluxo principal não exige conta nem conexão com a internet.
 
 DESTAQUES
 
@@ -12,6 +12,7 @@ DESTAQUES
 • Exportação rica para SVG, PNG retina e PDF com controles de tema e fundo
 • Área de transferência inteligente para Slack, Notion, Keynote e outros apps
 • Apresentações em tela cheia com múltiplos arquivos e destaque de nós ao clicar
+• Links opcionais somente leitura com expiração automática e gerenciamento local
 • Interface em inglês e português brasileiro
 
-O Meditor armazena o código dos diagramas como texto simples. A renderização acontece localmente e o conteúdo dos documentos nunca deixa o dispositivo.
+O Meditor armazena o código dos diagramas como texto simples e renderiza localmente. O conteúdo só é enviado ao serviço de compartilhamento configurado quando você escolhe explicitamente Publicar.

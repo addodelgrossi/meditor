@@ -1,4 +1,4 @@
-O Meditor não exige conta e não possui recursos baseados em rede.
+O Meditor não exige conta. Edição, renderização, Quick Look, exportação, área de transferência e apresentações funcionam offline. O acesso à rede só é usado quando o revisor escolhe explicitamente Publicar ou Remover publicação.
 
 Para revisar o fluxo principal:
 1. Abra o aplicativo e escolha qualquer modelo incluído.
@@ -6,7 +6,10 @@ Para revisar o fluxo principal:
 3. Use o seletor de layout para alternar entre editor, dividido e prévia.
 4. Use Exportar para visualizar e salvar SVG, PNG retina ou PDF, ou copiar uma imagem rica.
 5. Use Apresentar para montar um deck temporário com múltiplos arquivos e entrar em tela cheia.
-6. Abra Ajustes para revisar as preferências e a seção Sobre e Legal.
-7. No Finder, selecione qualquer arquivo .mmd ou .mermaid associado ao Meditor e pressione espaço para verificar a prévia renderizada pelo Quick Look. Arquivos inválidos ou vazios exibem o código-fonte.
+6. Use Publicar para criar um link somente leitura com expiração e depois use Diagrama > Links publicados para abrir ou remover a publicação.
+7. Abra Ajustes para revisar as preferências, o serviço de compartilhamento configurado e a seção Sobre e Legal.
+8. No Finder, selecione qualquer arquivo .mmd ou .mermaid associado ao Meditor e pressione espaço para verificar a prévia renderizada pelo Quick Look. Arquivos inválidos ou vazios exibem o código-fonte.
 
-Toda renderização Mermaid, incluindo a extensão Quick Look, acontece localmente usando o recurso JavaScript incluído. O WKWebView exige o entitlement de cliente de rede para seu processo auxiliar em sandbox, mas o renderer possui uma Content Security Policy com connect-src 'none' e a navegação é restrita a URLs locais file/about. O aplicativo e a extensão não fazem requisições de rede nem transmitem o conteúdo dos documentos.
+Toda renderização Mermaid, incluindo a extensão Quick Look, acontece localmente usando o recurso JavaScript incluído. O renderer possui uma Content Security Policy com connect-src 'none' e a navegação é restrita a URLs locais file/about. A extensão Quick Look não possui entitlement de rede.
+
+O entitlement de rede do aplicativo principal permite o recurso explícito Publicar. Publicar envia o código do diagrama, tema selecionado, imagem de prévia social gerada e tempo de expiração escolhido ao serviço HTTPS configurado. Remover publicação envia o token de exclusão armazenado. Nenhum conteúdo do diagrama é transmitido durante edição, renderização, Quick Look, exportação, área de transferência ou apresentações.

@@ -1,57 +1,64 @@
 ---
+layout: default
+lang: en
+title: Support — Meditor
+description: Help, controls, and reporting guidance for Meditor.
+canonical_path: /support/
+alternate_lang: pt-BR
+alternate_path: /pt-BR/support/
+alternate_label: PT
+og_locale: en_US
+og_alternate_locale: pt_BR
+home_path: /
+privacy_path: /privacy/
+support_path: /support/
+skip_label: Skip to content
+body_class: text-page
 ---
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#07090f">
-    <title>Suporte — Meditor</title>
-    <link rel="icon" href="{{ '/assets/meditor-icon.png' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav shell">
-        <a class="brand" href="{{ '/' | relative_url }}">
-          <img src="{{ '/assets/meditor-icon.png' | relative_url }}" alt="">Meditor
-        </a>
-        <div class="nav-links">
-          <a href="{{ '/' | relative_url }}">Início</a>
-          <a href="{{ '/privacy/' | relative_url }}">Privacidade</a>
-          <a href="https://github.com/addodelgrossi/meditor">GitHub</a>
-        </div>
-      </nav>
-    </header>
-    <main class="page shell">
-      <span class="eyebrow">Ajuda</span>
-      <h1 class="gradient-text">Suporte</h1>
-      <p>O Meditor é um editor Mermaid nativo e offline para macOS.</p>
-      <h2>Antes de relatar um problema</h2>
-      <ol>
-        <li>Confirme que o Mac executa macOS 26 ou posterior.</li>
-        <li>Teste o código usando um dos modelos incluídos no Meditor.</li>
-        <li>Inclua a versão exibida em Ajustes → Sobre e Legal.</li>
-      </ol>
-      <p>
-        Para ajuda, relatos de erros e sugestões, abra uma
-        <a href="https://github.com/addodelgrossi/meditor/issues/new">issue no GitHub</a>.
-        Não inclua conteúdo confidencial de diagramas em relatos públicos.
-      </p>
+<article class="page shell">
+  <span class="eyebrow">Support</span>
+  <h1>Make the diagram.<br><span class="gradient-text">We will help with the rest.</span></h1>
+  <p class="page-lead">Meditor is a native Mermaid editor for macOS 26 or newer.</p>
 
-      <h2 id="english">English</h2>
-      <p>Meditor is a native, offline Mermaid editor for macOS.</p>
-      <p>
-        For help, bug reports, and feature requests, open a
-        <a href="https://github.com/addodelgrossi/meditor/issues/new">GitHub issue</a>.
-        Do not include confidential diagram content in public reports.
-      </p>
-    </main>
-    <footer class="site-footer">
-      <div class="footer-inner shell">
-        <span>© 2026 Addo Del Grossi · Meditor</span>
-        <div class="footer-links"><a href="{{ '/' | relative_url }}">Início</a><a href="{{ '/privacy/' | relative_url }}">Privacidade</a></div>
-      </div>
-    </footer>
-  </body>
-</html>
+  <h2>Before reporting a problem</h2>
+  <ol>
+    <li>Confirm your Mac is running macOS 26 or newer.</li>
+    <li>Try the source with one of Meditor's built-in templates.</li>
+    <li>Include the version shown in Settings → About & Legal.</li>
+    <li>Do not include confidential diagram content in a public report.</li>
+  </ol>
+  <p>
+    For help, bug reports, and feature requests, open a
+    <a href="https://github.com/addodelgrossi/meditor/issues/new">GitHub issue</a>.
+  </p>
+
+  <h2>Canvas controls</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>Control</th></tr></thead>
+      <tbody>
+        <tr><td>Move around the canvas</td><td>Drag or scroll</td></tr>
+        <tr><td>Zoom</td><td>Toolbar or <kbd>⌘</kbd> + scroll</td></tr>
+        <tr><td>Fit diagram</td><td>Double-click or <kbd>⌘ 0</kbd></td></tr>
+        <tr><td>Switch layout</td><td><kbd>⌘ ⌥ 1</kbd>, <kbd>2</kbd>, or <kbd>3</kbd></td></tr>
+        <tr><td>Copy image</td><td><kbd>⌘ ⇧ C</kbd></td></tr>
+        <tr><td>Export with options</td><td><kbd>⌘ ⇧ E</kbd></td></tr>
+        <tr><td>Build presentation</td><td><kbd>⌘ ⇧ Return</kbd></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Presentation controls</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>Control</th></tr></thead>
+      <tbody>
+        <tr><td>Previous / next slide</td><td>Arrow keys, or Space to advance</td></tr>
+        <tr><td>Highlight a node</td><td>Click the node</td></tr>
+        <tr><td>Clear node highlight</td><td>Click the canvas</td></tr>
+        <tr><td>Fit diagram</td><td><kbd>0</kbd> or double-click</td></tr>
+        <tr><td>End presentation</td><td><kbd>Escape</kbd></td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>

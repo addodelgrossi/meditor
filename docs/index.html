@@ -1,140 +1,155 @@
 ---
+layout: default
+lang: en
+title: Meditor — Native Mermaid editor for macOS
+description: Write, preview, inspect, export, present, and share Mermaid diagrams in a focused native macOS app.
+canonical_path: /
+alternate_lang: pt-BR
+alternate_path: /pt-BR/
+alternate_label: PT
+og_locale: en_US
+og_alternate_locale: pt_BR
+home_path: /
+privacy_path: /privacy/
+support_path: /support/
+skip_label: Skip to content
+body_class: landing
+demo_video: /assets/docs-demo-en.mp4
+demo_poster: /assets/docs-demo-en.jpg
+demo_alt: Meditor editing a Mermaid flowchart with a live preview
 ---
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Meditor é um editor Mermaid nativo, rápido e offline para macOS.">
-    <meta name="theme-color" content="#07090f">
-    <title>Meditor — Mermaid editor for macOS</title>
-    <link rel="icon" href="{{ '/assets/meditor-icon.png' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav shell" aria-label="Navegação principal">
-        <a class="brand" href="{{ '/' | relative_url }}">
-          <img src="{{ '/assets/meditor-icon.png' | relative_url }}" alt="">
-          Meditor
-        </a>
-        <div class="nav-links">
-          <a href="#quick-look">Quick Look</a>
-          <a href="#recursos">Recursos</a>
-          <a href="{{ '/privacy/' | relative_url }}">Privacidade</a>
-          <a href="{{ '/support/' | relative_url }}">Suporte</a>
-          <a href="https://github.com/addodelgrossi/meditor">GitHub</a>
-        </div>
-      </nav>
-    </header>
+<section class="hero shell">
+  <div class="hero-copy">
+    <span class="eyebrow">Native for macOS · Private by default</span>
+    <h1>Diagram at the <span class="gradient-text">speed of thought.</span></h1>
+    <p>
+      Write Mermaid in a precise native editor, see every change instantly,
+      and move from source to presentation without leaving your Mac.
+    </p>
+    <div class="actions">
+      <a class="button primary" href="https://github.com/addodelgrossi/meditor/releases/latest">
+        Get latest release
+        <span aria-hidden="true">↓</span>
+      </a>
+      <a class="button" href="https://github.com/addodelgrossi/meditor">
+        Explore the source
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <div class="hero-meta">
+      <span>Free and open source</span>
+      <span>macOS 26+</span>
+      <span>English + pt-BR</span>
+    </div>
+  </div>
+  {% include demo-media.html %}
+</section>
 
-    <main>
-      <section class="hero shell">
-        <div class="hero-copy">
-          <span class="eyebrow">Nativo para macOS · Offline</span>
-          <h1><span class="gradient-text">Diagramas claros.</span><br>Código simples.</h1>
-          <p>
-            Escreva Mermaid, veja o resultado instantaneamente e exporte
-            SVG, PNG ou PDF. Seus documentos nunca saem do seu Mac.
-          </p>
-          <div class="actions">
-            <a class="button primary" href="https://github.com/addodelgrossi/meditor">Ver código no GitHub</a>
-            <a class="button" href="{{ '/support/' | relative_url }}">Suporte</a>
-          </div>
-          <div class="availability">Gratuito · Código aberto · Em breve na Mac App Store</div>
-        </div>
+<section class="proof-strip">
+  <div class="shell proof-grid">
+    <div><strong>Native</strong><span>SwiftUI + TextKit</span></div>
+    <div><strong>Local</strong><span>Bundled Mermaid renderer</span></div>
+    <div><strong>Open</strong><span>MIT licensed</span></div>
+    <div><strong>Flexible</strong><span>SVG · PNG · PDF</span></div>
+  </div>
+</section>
 
-        <div class="preview">
-          <img src="{{ '/assets/app-preview.svg' | relative_url }}" alt="Prévia da interface do Meditor com editor Mermaid e diagrama ao vivo">
-          <div class="preview-note">Prévia da interface do Meditor</div>
-        </div>
-      </section>
+<section class="section shell" id="features">
+  <div class="section-heading split-heading">
+    <div>
+      <span class="eyebrow">A complete Mermaid workspace</span>
+      <h2>More than a preview pane.</h2>
+    </div>
+    <p>
+      Meditor keeps plain-text diagrams simple while adding the native tools
+      that make them easier to create, understand, and reuse.
+    </p>
+  </div>
+  <div class="feature-bento">
+    <article class="feature-card feature-card-wide">
+      <span class="feature-number">01</span>
+      <h3>Edit with confidence</h3>
+      <p>Syntax highlighting, line numbers, completion, inline errors, and last-valid-preview recovery keep you moving.</p>
+      <img src="{{ '/assets/workspace-en.webp' | relative_url }}" alt="Meditor split editor and live diagram preview" loading="lazy">
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon" aria-hidden="true">⌘</span>
+      <h3>Inspect the structure</h3>
+      <p>Navigate diagram elements, catch common issues, and safely rename supported identifiers.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon" aria-hidden="true">↗</span>
+      <h3>Export for anywhere</h3>
+      <p>Save SVG, retina PNG, or PDF, or copy a rich image that lets each destination choose its best format.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon" aria-hidden="true">▶</span>
+      <h3>Present from source</h3>
+      <p>Build a temporary multi-file deck, present full screen, and highlight nodes while you explain.</p>
+    </article>
+  </div>
+</section>
 
-      <section class="section shell quick-look-section" id="quick-look">
-        <div class="section-heading">
-          <span class="eyebrow">Quick Look no Finder</span>
-          <h2>Descubra o diagrama antes mesmo de abrir o app.</h2>
-          <p>
-            Selecione qualquer arquivo <code>.mmd</code> ou <code>.mermaid</code>
-            no Finder e pressione espaço. A prévia é renderizada localmente,
-            ajustada automaticamente à janela e sem abrir o Meditor.
-          </p>
-        </div>
-        <div class="demo-frame">
-          {% assign quick_look_demo = site.static_files | where: "path", "/assets/quick-look-demo.mp4" | first %}
-          {% if quick_look_demo %}
-          <video
-            autoplay
-            muted
-            loop
-            playsinline
-            poster="{{ '/assets/quick-look-demo.jpg' | relative_url }}"
-            aria-label="Demonstração do Quick Look renderizando um arquivo Mermaid no Finder"
-          >
-            <source src="{{ '/assets/quick-look-demo.mp4' | relative_url }}" type="video/mp4">
-            Seu navegador não suporta vídeo HTML.
-          </video>
-          {% else %}
-          <img
-            src="{{ '/assets/quick-look-preview.svg' | relative_url }}"
-            alt="Ilustração animada do Quick Look renderizando um arquivo Mermaid no Finder"
-          >
-          {% endif %}
-        </div>
-      </section>
+<section class="section shell finder-section">
+  <div class="section-heading">
+    <span class="eyebrow">Finder Quick Look</span>
+    <h2>See the diagram before opening the app.</h2>
+    <p>
+      Select any <code>.mmd</code> or <code>.mermaid</code> file in Finder and
+      press Space. Quick Look renders it locally with the same bundled engine.
+    </p>
+  </div>
+  <div class="media-frame">
+    <video autoplay muted loop playsinline poster="{{ '/assets/quick-look-demo.jpg' | relative_url }}" aria-label="Finder Quick Look rendering a Mermaid file">
+      <source src="{{ '/assets/quick-look-demo.mp4' | relative_url }}" type="video/mp4">
+    </video>
+    <img class="motion-fallback" src="{{ '/assets/quick-look-preview.svg' | relative_url }}" alt="Finder Quick Look rendering a Mermaid file">
+  </div>
+</section>
 
-      <section class="section shell" id="recursos">
-        <div class="section-heading">
-          <h2>Feito para transformar ideias em diagramas.</h2>
-          <p>Uma experiência focada, sem contas, anúncios ou distrações.</p>
-        </div>
-        <div class="feature-grid">
-          <article class="feature">
-            <div class="feature-icon">␣</div>
-            <h3>Quick Look no Finder</h3>
-            <p>Pressione espaço sobre um arquivo Mermaid para ver o diagrama sem abrir o app.</p>
-          </article>
-          <article class="feature">
-            <div class="feature-icon">⌘</div>
-            <h3>Prévia instantânea</h3>
-            <p>Edite o código Mermaid e acompanhe o diagrama em tempo real, lado a lado.</p>
-          </article>
-          <article class="feature">
-            <div class="feature-icon">↗</div>
-            <h3>Exportação completa</h3>
-            <p>Exporte SVG, PNG e PDF ou copie o resultado para a área de transferência.</p>
-          </article>
-          <article class="feature">
-            <div class="feature-icon">◈</div>
-            <h3>100% local</h3>
-            <p>A renderização acontece offline. Nenhum documento ou dado pessoal é transmitido.</p>
-          </article>
-        </div>
-      </section>
+<section class="section local-section" id="local-first">
+  <div class="shell local-grid">
+    <div class="section-heading">
+      <span class="eyebrow">Local-first architecture</span>
+      <h2>Your diagram stays on your Mac by default.</h2>
+      <p>
+        Editing, rendering, Quick Look, export, clipboard, and presentations use
+        local files and bundled resources. Publishing is an explicit, optional action.
+      </p>
+      <a class="text-link" href="{{ '/privacy/' | relative_url }}">Read the privacy policy <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="architecture-map" aria-label="Meditor local-first architecture">
+      <div class="architecture-node source-node"><span>01</span><strong>Mermaid source</strong><small>Plain-text document</small></div>
+      <div class="architecture-node engine-node"><span>02</span><strong>Local renderer</strong><small>Bundled Mermaid</small></div>
+      <div class="architecture-node output-node"><span>03</span><strong>Native outputs</strong><small>Preview · export · Quick Look</small></div>
+      <div class="architecture-node cloud-node"><span>Optional</span><strong>Publish link</strong><small>Only after your action</small></div>
+      <i class="connector connector-a" aria-hidden="true"></i>
+      <i class="connector connector-b" aria-hidden="true"></i>
+      <i class="connector connector-c" aria-hidden="true"></i>
+    </div>
+  </div>
+</section>
 
-      <section class="section shell">
-        <div class="privacy-callout">
-          <div>
-            <h2>Seus diagramas pertencem a você.</h2>
-            <p>
-              O Meditor não coleta dados, não exige conta e não utiliza rastreamento.
-              O código-fonte é aberto sob a licença MIT.
-            </p>
-          </div>
-          <a class="button" href="{{ '/privacy/' | relative_url }}">Ler política de privacidade</a>
-        </div>
-      </section>
-    </main>
+<section class="section shell open-source-section">
+  <div>
+    <span class="eyebrow">Built in the open</span>
+    <h2>Read it. Build it. Make it yours.</h2>
+  </div>
+  <p>
+    Meditor is a Swift and SwiftUI project with account-free local builds,
+    automated tests, bilingual documentation, and a notarized GitHub release.
+  </p>
+  <div class="actions">
+    <a class="button primary" href="https://github.com/addodelgrossi/meditor">View on GitHub</a>
+    <a class="button" href="https://github.com/addodelgrossi/meditor/blob/main/CONTRIBUTING.md">Contribute</a>
+  </div>
+</section>
 
-    <footer class="site-footer">
-      <div class="footer-inner shell">
-        <span>© 2026 Addo Del Grossi · Meditor</span>
-        <div class="footer-links">
-          <a href="{{ '/privacy/' | relative_url }}">Privacidade</a>
-          <a href="{{ '/support/' | relative_url }}">Suporte</a>
-          <a href="https://github.com/addodelgrossi/meditor">GitHub</a>
-        </div>
-      </div>
-    </footer>
-  </body>
-</html>
+<section class="final-cta">
+  <div class="shell">
+    <img src="{{ '/assets/meditor-icon.png' | relative_url }}" alt="">
+    <h2>Make the next diagram feel native.</h2>
+    <p>Download the latest notarized build for macOS 26 or newer.</p>
+    <a class="button primary" href="https://github.com/addodelgrossi/meditor/releases/latest">Get Meditor</a>
+  </div>
+</section>

@@ -5,8 +5,8 @@ app:
   quick_look_bundle_id: com.addodelgrossi.meditor.quicklook
   sku: meditor-macos-001
   platform: macOS
-  version: 1.0.0
-  build: 1
+  version: 1.1.0
+  build: 3
   minimum_os: "26.0"
   primary_category: Developer Tools
   secondary_category: Productivity

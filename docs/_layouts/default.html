@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="{{ page.lang | default: 'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ page.description | escape }}">
+    <meta name="theme-color" content="#080a12">
+    <meta name="color-scheme" content="dark">
+    <link rel="canonical" href="{{ site.url }}{{ site.baseurl }}{{ page.canonical_path }}">
+    <link rel="alternate" hreflang="{{ page.lang }}" href="{{ site.url }}{{ site.baseurl }}{{ page.canonical_path }}">
+    <link rel="alternate" hreflang="{{ page.alternate_lang }}" href="{{ site.url }}{{ site.baseurl }}{{ page.alternate_path }}">
+    <link rel="alternate" hreflang="x-default" href="{{ site.url }}{{ site.baseurl }}/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Meditor">
+    <meta property="og:title" content="{{ page.title | escape }}">
+    <meta property="og:description" content="{{ page.description | escape }}">
+    <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.canonical_path }}">
+    <meta property="og:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-card.png">
+    <meta property="og:locale" content="{{ page.og_locale }}">
+    <meta property="og:locale:alternate" content="{{ page.og_alternate_locale }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page.title | escape }}">
+    <meta name="twitter:description" content="{{ page.description | escape }}">
+    <meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-card.png">
+    <title>{{ page.title }}</title>
+    <link rel="icon" href="{{ '/assets/meditor-icon.png' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+  </head>
+  <body class="{{ page.body_class }}">
+    <a class="skip-link" href="#content">{{ page.skip_label }}</a>
+    {% include site-header.html %}
+    <main id="content">
+      {{ content }}
+    </main>
+    {% include site-footer.html %}
+  </body>
+</html>

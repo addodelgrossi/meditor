@@ -1,0 +1,6 @@
+<div class="media-frame demo-media">
+  <video autoplay muted loop playsinline poster="{{ page.demo_poster | relative_url }}" aria-label="{{ page.demo_alt }}">
+    <source src="{{ page.demo_video | relative_url }}" type="video/mp4">
+  </video>
+  <img class="motion-fallback" src="{{ page.demo_poster | relative_url }}" alt="{{ page.demo_alt }}">
+</div>

@@ -1,0 +1,22 @@
+<footer class="site-footer">
+  <div class="footer-inner shell">
+    <a class="brand footer-brand" href="{{ page.home_path | relative_url }}">
+      <img src="{{ '/assets/meditor-icon.png' | relative_url }}" alt="">
+      <span>Meditor</span>
+    </a>
+    <p>
+      {% if page.lang == 'pt-BR' %}
+        Editor Mermaid nativo para macOS. Código aberto sob licença MIT.
+      {% else %}
+        A native Mermaid editor for macOS. Open source under the MIT License.
+      {% endif %}
+    </p>
+    <div class="footer-links">
+      <a href="{{ page.privacy_path | relative_url }}">{% if page.lang == 'pt-BR' %}Privacidade{% else %}Privacy{% endif %}</a>
+      <a href="{{ page.support_path | relative_url }}">{% if page.lang == 'pt-BR' %}Suporte{% else %}Support{% endif %}</a>
+      <a href="https://github.com/addodelgrossi/meditor/releases/latest">{% if page.lang == 'pt-BR' %}Releases{% else %}Releases{% endif %}</a>
+      <a href="https://github.com/addodelgrossi/meditor">GitHub</a>
+    </div>
+    <span class="copyright">© 2026 Addo Del Grossi</span>
+  </div>
+</footer>
