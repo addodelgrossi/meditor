@@ -76,7 +76,9 @@ record for `com.addodelgrossi.meditor` does not exist yet. Once created, run:
 - [ ] Create the `app-store-connect` GitHub environment
 - [ ] Add `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`,
   and `APP_STORE_CONNECT_API_KEY_P8` as environment secrets
-- [ ] Enable cloud-managed Developer ID certificate access for the API key
+- [ ] Add a base64-encoded Developer ID Application `.p12` and its password as
+  `DEVELOPER_ID_CERTIFICATE_P12_BASE64` and
+  `DEVELOPER_ID_CERTIFICATE_PASSWORD`
 - [ ] Push an annotated semantic-version tag such as `v1.1.0`
 - [ ] Confirm the workflow uploaded the new build to App Store Connect
 - [ ] Confirm the independent GitHub Release contains the notarized DMG and

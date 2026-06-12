@@ -70,6 +70,45 @@ jobs:
           chmod 600 "$key_path"
           echo "APP_STORE_CONNECT_API_KEY_PATH=$key_path" >>"$GITHUB_ENV"
 
+      - name: Configure Developer ID certificate
+        shell: bash
+        env:
+          DEVELOPER_ID_CERTIFICATE_P12_BASE64: ${{ secrets.DEVELOPER_ID_CERTIFICATE_P12_BASE64 }}
+          DEVELOPER_ID_CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+        run: |
+          for name in DEVELOPER_ID_CERTIFICATE_P12_BASE64 DEVELOPER_ID_CERTIFICATE_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing GitHub secret: $name" >&2
+              exit 2
+            fi
+          done
+
+          certificate_path="$RUNNER_TEMP/developer-id-application.p12"
+          keychain_path="$RUNNER_TEMP/developer-id.keychain-db"
+          keychain_password="$(openssl rand -base64 36)"
+
+          printf '%s' "$DEVELOPER_ID_CERTIFICATE_P12_BASE64" | base64 --decode >"$certificate_path"
+          chmod 600 "$certificate_path"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" \
+            -k "$keychain_path" \
+            -P "$DEVELOPER_ID_CERTIFICATE_PASSWORD" \
+            -A \
+            -f pkcs12
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+          security list-keychains -d user -s "$keychain_path" login.keychain-db
+          security find-identity -v -p codesigning "$keychain_path" |
+            grep -F 'Developer ID Application: ADDO DEL GROSSI (QHURUB34Z9)'
+
+          echo "DEVELOPER_ID_CERTIFICATE_PATH=$certificate_path" >>"$GITHUB_ENV"
+          echo "DEVELOPER_ID_KEYCHAIN_PATH=$keychain_path" >>"$GITHUB_ENV"
+
       - name: Install release tools
         run: brew install xcodegen ripgrep
 
@@ -95,6 +134,8 @@ jobs:
               --title "Meditor $MARKETING_VERSION"
           fi
 
-      - name: Remove App Store Connect API key
+      - name: Remove signing credentials
         if: always()
-        run: rm -f "$APP_STORE_CONNECT_API_KEY_PATH"
+        run: |
+          security delete-keychain "$DEVELOPER_ID_KEYCHAIN_PATH" 2>/dev/null || true
+          rm -f "$DEVELOPER_ID_CERTIFICATE_PATH" "$APP_STORE_CONNECT_API_KEY_PATH"

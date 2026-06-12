@@ -153,11 +153,14 @@ Configure an `app-store-connect` GitHub environment with these secrets:
 - `APP_STORE_CONNECT_API_ISSUER_ID`: App Store Connect issuer ID
 - `APP_STORE_CONNECT_API_KEY_P8`: complete contents of the downloaded `.p8`
   private key
+- `DEVELOPER_ID_CERTIFICATE_P12_BASE64`: base64-encoded Developer ID
+  Application certificate and private key
+- `DEVELOPER_ID_CERTIFICATE_PASSWORD`: password used to protect the `.p12`
 
 Create an Admin team API key in App Store Connect under **Users and Access >
-Integrations**, enable access to cloud-managed Developer ID certificates, and
-keep the downloaded private key only in the GitHub environment secret. Then
-publish the next release with:
+Integrations**, and have the Account Holder issue a Developer ID Application
+certificate. Keep both private keys only in the GitHub environment secrets.
+Then publish the next release with:
 
 ```bash
 git tag -a v1.1.0 -m "Meditor 1.1.0"

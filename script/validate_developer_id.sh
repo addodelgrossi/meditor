@@ -32,7 +32,7 @@ validate_bundle() {
   signing_info="$(codesign -dvvv "$bundle" 2>&1)"
   grep -q '^Authority=Developer ID Application:' <<<"$signing_info"
   grep -q "^TeamIdentifier=$EXPECTED_TEAM_ID$" <<<"$signing_info"
-  grep -q '^flags=.*runtime' <<<"$signing_info"
+  grep -q '^CodeDirectory .*flags=.*runtime' <<<"$signing_info"
   grep -q '^Timestamp=' <<<"$signing_info"
 }
 
