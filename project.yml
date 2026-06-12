@@ -14,6 +14,9 @@ configs:
 settings:
   base:
     CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    # Keep local builds account-free; script/archive.sh overrides these for distribution.
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
     DEAD_CODE_STRIPPING: YES
     ENABLE_HARDENED_RUNTIME: YES
     MACOSX_DEPLOYMENT_TARGET: "26.0"
@@ -82,8 +85,6 @@ targets:
     settings:
       base:
         BUNDLE_LOADER: "$(TEST_HOST)"
-        CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: QHURUB34Z9
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.tests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Meditor.app/Contents/MacOS/Meditor"
@@ -100,7 +101,5 @@ targets:
         buildPhase: resources
     settings:
       base:
-        CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: QHURUB34Z9
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.addodelgrossi.meditor.quicklook.tests

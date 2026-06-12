@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ARCHIVE_PATH="${ARCHIVE_PATH:-$ROOT_DIR/dist/Meditor.xcarchive}"
 MARKETING_VERSION="${MARKETING_VERSION:-$(awk -F ' = ' '$1 == "MARKETING_VERSION" { print $2 }' "$ROOT_DIR/Configuration/Meditor.xcconfig")}"
 BUILD_NUMBER="${BUILD_NUMBER:-$(awk -F ' = ' '$1 == "CURRENT_PROJECT_VERSION" { print $2 }' "$ROOT_DIR/Configuration/Meditor.xcconfig")}"
+APP_STORE_DEVELOPMENT_TEAM="${APP_STORE_DEVELOPMENT_TEAM:-QHURUB34Z9}"
 
 if [[ ! "$MARKETING_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "MARKETING_VERSION must use the format 1.2.3: $MARKETING_VERSION" >&2
@@ -33,6 +34,9 @@ xcodebuild \
   "${XCODE_AUTH_ARGS[@]}" \
   MARKETING_VERSION="$MARKETING_VERSION" \
   CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+  CODE_SIGN_STYLE=Automatic \
+  CODE_SIGN_IDENTITY="Apple Distribution" \
+  DEVELOPMENT_TEAM="$APP_STORE_DEVELOPMENT_TEAM" \
   clean archive
 
 "$ROOT_DIR/script/validate_release.sh" "$ARCHIVE_PATH"

@@ -58,6 +58,8 @@ cd meditor
 ```
 
 The generated application is placed at `dist/Meditor.app`.
+Local Xcode builds use ad hoc signing, so cloning and running the project does
+not require an Apple Developer account or a development certificate.
 
 ## Canvas Controls
 
@@ -116,7 +118,9 @@ brew install xcodegen
 
 The upload command requires the App Store Connect record for
 `com.addodelgrossi.meditor` and valid agreements for the `ADDO DEL GROSSI`
-team; App Store validation requires the same record. Increment
+team; App Store validation requires the same record. Distribution signing is
+applied only by `script/archive.sh`; forks can set `APP_STORE_DEVELOPMENT_TEAM`
+to their own team ID. Increment
 `CURRENT_PROJECT_VERSION` in
 `Configuration/Meditor.xcconfig` before every upload.
 

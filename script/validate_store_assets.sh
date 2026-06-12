@@ -23,7 +23,9 @@ test -f docs/assets/quick-look-preview.svg
 rg -q '^PRODUCT_BUNDLE_IDENTIFIER = com\.addodelgrossi\.meditor$' Configuration/Meditor.xcconfig
 rg -q '^MARKETING_VERSION = [0-9]+\.[0-9]+\.[0-9]+$' Configuration/Meditor.xcconfig
 rg -q '^CURRENT_PROJECT_VERSION = [1-9][0-9]*$' Configuration/Meditor.xcconfig
-rg -q '^DEVELOPMENT_TEAM = QHURUB34Z9$' Configuration/Meditor.xcconfig
+rg -q '^APP_STORE_DEVELOPMENT_TEAM="\$\{APP_STORE_DEVELOPMENT_TEAM:-QHURUB34Z9\}"$' script/archive.sh
+rg -q '^    CODE_SIGN_IDENTITY: "-"$' project.yml
+rg -q '^    CODE_SIGN_STYLE: Manual$' project.yml
 rg -q '<string>CA92\.1</string>' Sources/Meditor/Resources/PrivacyInfo.xcprivacy
 rg -q '<key>com\.apple\.security\.app-sandbox</key>' Configuration/Meditor.entitlements
 rg -q '<key>com\.apple\.security\.files\.user-selected\.read-write</key>' Configuration/Meditor.entitlements
@@ -34,6 +36,12 @@ rg -q '<key>com\.apple\.security\.files\.user-selected\.read-only</key>' Configu
 rg -q "connect-src 'none'" Sources/Meditor/Resources/renderer.html
 rg -q 'quick-look-preview\.svg' README.md docs/index.html
 rg -q 'quick-look-demo\.mp4' docs/index.html
+
+if rg -q 'DevelopmentTeam =|DEVELOPMENT_TEAM = ' \
+  Meditor.xcodeproj/project.pbxproj Configuration/Meditor.xcconfig project.yml; then
+  echo "Local Xcode builds must not require an Apple Developer team" >&2
+  exit 1
+fi
 
 if rg -q '<key>com\.apple\.security\.network\.' Configuration/MeditorQuickLook.entitlements; then
   echo "Quick Look extension must not request network entitlements" >&2

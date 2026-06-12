@@ -2,7 +2,7 @@
 
 ## Ready in the repository
 
-- [x] Xcode app and test targets with automatic signing for team `QHURUB34Z9`
+- [x] Local Xcode targets use account-free ad hoc signing; archives use automatic signing for team `QHURUB34Z9`
 - [x] Bundle ID `com.addodelgrossi.meditor`, version `1.0.0`, build `1`
 - [x] Quick Look extension bundle ID `com.addodelgrossi.meditor.quicklook`
 - [x] App Sandbox, user-selected file access, privacy manifest, and export compliance

@@ -14,7 +14,6 @@ xcodebuild \
   -configuration Debug \
   -destination "platform=macOS" \
   -derivedDataPath "$DERIVED_DATA" \
-  -allowProvisioningUpdates \
   build
 
 test -d "$EXTENSION"
