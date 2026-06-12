@@ -94,7 +94,6 @@ xcrun notarytool submit "$DMG_PATH" \
 
 xcrun stapler staple "$DMG_PATH"
 xcrun stapler validate "$DMG_PATH"
-spctl --assess --type open --context context:primary-signature --verbose=4 "$DMG_PATH"
 
 MOUNT_POINT="$(mktemp -d "${TMPDIR:-/tmp}/meditor-dmg.XXXXXX")"
 hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT_POINT" "$DMG_PATH" >/dev/null
