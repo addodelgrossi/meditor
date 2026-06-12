@@ -41,6 +41,8 @@ jobs:
           echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >>"$GITHUB_ENV"
 
       - name: Install release tools
+        env:
+          HOMEBREW_REQUIRE_TAP_TRUST: "1"
         run: brew install xcodegen ripgrep
 
       - name: Run tests
