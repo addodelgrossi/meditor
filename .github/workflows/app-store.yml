@@ -22,7 +22,7 @@ jobs:
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Select Xcode 26.5
         run: sudo xcode-select --switch /Applications/Xcode_26.5.app/Contents/Developer
@@ -55,8 +55,8 @@ jobs:
           chmod 600 "$key_path"
           echo "APP_STORE_CONNECT_API_KEY_PATH=$key_path" >>"$GITHUB_ENV"
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Install release tools
+        run: brew install xcodegen ripgrep
 
       - name: Run tests
         run: swift test
