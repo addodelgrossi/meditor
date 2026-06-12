@@ -54,6 +54,12 @@ jobs:
           echo "MARKETING_VERSION=$version" >>"$GITHUB_ENV"
           echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >>"$GITHUB_ENV"
 
+      - name: Install release tools
+        run: brew install xcodegen ripgrep
+
+      - name: Run tests
+        run: swift test
+
       - name: Configure App Store Connect API key
         shell: bash
         env:
@@ -109,12 +115,6 @@ jobs:
 
           echo "DEVELOPER_ID_CERTIFICATE_PATH=$certificate_path" >>"$GITHUB_ENV"
           echo "DEVELOPER_ID_KEYCHAIN_PATH=$keychain_path" >>"$GITHUB_ENV"
-
-      - name: Install release tools
-        run: brew install xcodegen ripgrep
-
-      - name: Run tests
-        run: swift test
 
       - name: Create and verify notarized DMG
         run: ./script/package_github_release.sh

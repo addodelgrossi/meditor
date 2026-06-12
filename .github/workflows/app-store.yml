@@ -40,6 +40,12 @@ jobs:
           echo "MARKETING_VERSION=${GITHUB_REF_NAME#v}" >>"$GITHUB_ENV"
           echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >>"$GITHUB_ENV"
 
+      - name: Install release tools
+        run: brew install xcodegen ripgrep
+
+      - name: Run tests
+        run: swift test
+
       - name: Configure App Store Connect API key
         shell: bash
         env:
@@ -56,12 +62,6 @@ jobs:
           printf '%s' "$APP_STORE_CONNECT_API_KEY_P8" >"$key_path"
           chmod 600 "$key_path"
           echo "APP_STORE_CONNECT_API_KEY_PATH=$key_path" >>"$GITHUB_ENV"
-
-      - name: Install release tools
-        run: brew install xcodegen ripgrep
-
-      - name: Run tests
-        run: swift test
 
       - name: Create and verify archive
         run: ./script/archive.sh
