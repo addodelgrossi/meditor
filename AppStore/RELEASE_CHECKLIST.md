@@ -1,9 +1,9 @@
-# Meditor 1.0 Mac App Store release checklist
+# Meditor 1.1 release checklist
 
 ## Ready in the repository
 
 - [x] Local Xcode targets use account-free ad hoc signing; archives use automatic signing for team `QHURUB34Z9`
-- [x] Bundle ID `com.addodelgrossi.meditor`, version `1.0.0`, build `1`
+- [x] Bundle ID `com.addodelgrossi.meditor`, version `1.1.0`, build `3`
 - [x] Quick Look extension bundle ID `com.addodelgrossi.meditor.quicklook`
 - [x] App Sandbox, user-selected file access, privacy manifest, and export compliance
 - [x] Complete app icon, English and Brazilian Portuguese localizations
@@ -76,6 +76,10 @@ record for `com.addodelgrossi.meditor` does not exist yet. Once created, run:
 - [ ] Create the `app-store-connect` GitHub environment
 - [ ] Add `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`,
   and `APP_STORE_CONNECT_API_KEY_P8` as environment secrets
-- [ ] Push a semantic-version tag such as `v1.0.1`
+- [ ] Enable cloud-managed Developer ID certificate access for the API key
+- [ ] Push an annotated semantic-version tag such as `v1.1.0`
 - [ ] Confirm the workflow uploaded the new build to App Store Connect
+- [ ] Confirm the independent GitHub Release contains the notarized DMG and
+  SHA-256 checksum
+- [ ] Confirm Gatekeeper accepts the app installed from the GitHub Release DMG
 - [ ] Select the processed build, submit it for review, and release it manually

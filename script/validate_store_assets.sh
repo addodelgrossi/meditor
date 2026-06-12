@@ -6,7 +6,8 @@ cd "$ROOT_DIR"
 
 plutil -lint Configuration/Info.plist Configuration/Meditor.entitlements \
   Configuration/MeditorQuickLook-Info.plist Configuration/MeditorQuickLook.entitlements \
-  Configuration/ExportOptions.plist Configuration/ValidationOptions.plist \
+  Configuration/ExportOptions.plist Configuration/DeveloperIDExportOptions.plist \
+  Configuration/ValidationOptions.plist \
   Sources/Meditor/Resources/PrivacyInfo.xcprivacy >/dev/null
 plutil -lint Sources/MeditorQuickLook/en.lproj/Localizable.strings \
   Sources/MeditorQuickLook/pt-BR.lproj/Localizable.strings >/dev/null
@@ -24,6 +25,10 @@ rg -q '^PRODUCT_BUNDLE_IDENTIFIER = com\.addodelgrossi\.meditor$' Configuration/
 rg -q '^MARKETING_VERSION = [0-9]+\.[0-9]+\.[0-9]+$' Configuration/Meditor.xcconfig
 rg -q '^CURRENT_PROJECT_VERSION = [1-9][0-9]*$' Configuration/Meditor.xcconfig
 rg -q '^APP_STORE_DEVELOPMENT_TEAM="\$\{APP_STORE_DEVELOPMENT_TEAM:-QHURUB34Z9\}"$' script/archive.sh
+rg -q '^DEVELOPER_ID_TEAM="\$\{DEVELOPER_ID_TEAM:-QHURUB34Z9\}"$' script/package_github_release.sh
+test "$(plutil -extract method raw Configuration/DeveloperIDExportOptions.plist)" = "developer-id"
+test "$(plutil -extract signingStyle raw Configuration/DeveloperIDExportOptions.plist)" = "automatic"
+test "$(plutil -extract teamID raw Configuration/DeveloperIDExportOptions.plist)" = "QHURUB34Z9"
 rg -q '^    CODE_SIGN_IDENTITY: "-"$' project.yml
 rg -q '^    CODE_SIGN_STYLE: Manual$' project.yml
 rg -q '<string>CA92\.1</string>' Sources/Meditor/Resources/PrivacyInfo.xcprivacy

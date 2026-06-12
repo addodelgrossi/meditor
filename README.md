@@ -103,7 +103,7 @@ Mermaid 11.15.0 is vendored for private, offline rendering. Update it with:
 Meditor stores diagram source as plain text. Rendering happens locally and
 document content never leaves the device.
 
-## Mac App Store Distribution
+## Distribution
 
 The checked-in Xcode project is generated from `project.yml` and shares the
 same sources and tests as the Swift package.
@@ -124,13 +124,28 @@ to their own team ID. Increment
 `CURRENT_PROJECT_VERSION` in
 `Configuration/Meditor.xcconfig` before every upload.
 
-### Tagged App Store uploads
+### Tagged releases
 
-Pushing a semantic-version tag such as `v1.0.1` runs
-`.github/workflows/app-store.yml`. The workflow tests the tagged commit,
-archives it with version `1.0.1`, validates it, and uploads a uniquely numbered
-build to App Store Connect. It does not submit the version for App Review or
-release it publicly.
+Pushing a semantic-version tag such as `v1.1.0` starts two independent
+workflows:
+
+- `.github/workflows/app-store.yml` tests, archives, validates, and uploads a
+  uniquely numbered build to App Store Connect. It does not submit the version
+  for App Review.
+- `.github/workflows/github-release.yml` exports a cloud-signed Developer ID
+  app, creates and notarizes a DMG, validates it with Gatekeeper, and publishes
+  the DMG and its SHA-256 checksum in a public GitHub Release.
+
+An App Store failure does not block the GitHub Release. The GitHub Release is
+never published if Developer ID signing, notarization, stapling, or Gatekeeper
+validation fails.
+
+Before creating a tag, the Developer ID and notarization pipeline can be
+verified without publishing a release:
+
+```bash
+gh workflow run github-release.yml -f version=1.1.0
+```
 
 Configure an `app-store-connect` GitHub environment with these secrets:
 
@@ -140,12 +155,13 @@ Configure an `app-store-connect` GitHub environment with these secrets:
   private key
 
 Create an Admin team API key in App Store Connect under **Users and Access >
-Integrations**, and keep the downloaded private key only in the GitHub
-environment secret. Then publish the next build with:
+Integrations**, enable access to cloud-managed Developer ID certificates, and
+keep the downloaded private key only in the GitHub environment secret. Then
+publish the next release with:
 
 ```bash
-git tag v1.0.1
-git push origin v1.0.1
+git tag -a v1.1.0 -m "Meditor 1.1.0"
+git push origin v1.1.0
 ```
 
 Privacy and support pages live in `docs/` and deploy through GitHub Pages.

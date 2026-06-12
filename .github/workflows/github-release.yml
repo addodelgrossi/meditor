@@ -1,0 +1,100 @@
+name: Publish Tagged GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to build and notarize without publishing
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, notarize, and publish DMG
+    runs-on: macos-26
+    environment: app-store-connect
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26.5
+        run: sudo xcode-select --switch /Applications/Xcode_26.5.app/Contents/Developer
+
+      - name: Read release version
+        shell: bash
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="$REQUESTED_VERSION"
+          fi
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release versions must use the format 1.2.3: $version" >&2
+            exit 2
+          fi
+
+          echo "MARKETING_VERSION=$version" >>"$GITHUB_ENV"
+          echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >>"$GITHUB_ENV"
+
+      - name: Configure App Store Connect API key
+        shell: bash
+        env:
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          for name in APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing GitHub secret: $name" >&2
+              exit 2
+            fi
+          done
+
+          key_path="$RUNNER_TEMP/app-store-connect-api-key.p8"
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_P8" >"$key_path"
+          chmod 600 "$key_path"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=$key_path" >>"$GITHUB_ENV"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run tests
+        run: swift test
+
+      - name: Create and verify notarized DMG
+        run: ./script/package_github_release.sh
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          dmg="dist/Meditor-$MARKETING_VERSION.dmg"
+          checksum="$dmg.sha256"
+
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$dmg" "$checksum" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$dmg" "$checksum" \
+              --verify-tag \
+              --generate-notes \
+              --title "Meditor $MARKETING_VERSION"
+          fi
+
+      - name: Remove App Store Connect API key
+        if: always()
+        run: rm -f "$APP_STORE_CONNECT_API_KEY_PATH"
